@@ -62,5 +62,5 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
-    protected User() {}
+    public User() {}
 }
