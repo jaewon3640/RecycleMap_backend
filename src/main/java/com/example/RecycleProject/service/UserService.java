@@ -2,13 +2,18 @@ package com.example.RecycleProject.service;
 
 import com.example.RecycleProject.DTO.JoinRequest;
 import com.example.RecycleProject.DTO.LoginRequest;
+import com.example.RecycleProject.DTO.RegionDTO;
 import com.example.RecycleProject.Repository.UserRepository;
+import com.example.RecycleProject.domain.Region;
 import com.example.RecycleProject.domain.Role;
 import com.example.RecycleProject.domain.User;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -19,6 +24,8 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private final RegionService regionService;
 
     // 회원가입 (쓰기 트랜잭션)
     /*
@@ -72,4 +79,15 @@ public class UserService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다. id=" + userId));
     }
+
+    public void updateMyRegion(Long userId, RegionDTO dto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을수 없습니다."));
+
+        Region region = regionService.getOrCreateRegion(dto);
+
+        user.updateRegion(region);
+
+    }
+
 }

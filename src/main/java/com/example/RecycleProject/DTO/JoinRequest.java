@@ -27,12 +27,7 @@ public class JoinRequest {
 
     // Entity로 변환하는 편의 메서드 (Service에서 사용 가능)
     public User toEntity() {
-        User user = new User();
-        user.setEmail(this.email);
-        user.setPassword(this.password);
-        user.setName(this.nickname);
-        // role 설정은 서비스 계층에서 권장
-        return user;
+        return User.createUser(this.email, this.password, this.nickname);
     }
 
 }

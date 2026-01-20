@@ -40,7 +40,7 @@ public class User {
      */
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "region_id")
+    @JoinColumn(name = "region_id", nullable = true)
     private Region region;
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -63,4 +63,18 @@ public class User {
     }
 
     public User() {}
+
+    public static User createUser(String email, String password, String name) {
+        User user = new User();
+        user.email = email;
+        user.password = password;
+        user.name = name;
+        // 여기서 비즈니스 규칙에 맞는 기본값을 설정할 수도 있습니다.
+        user.role = Role.USER;
+        return user;
+    }
+
+    public void updateRegion(Region region){
+        this.region = region;
+    }
 }
