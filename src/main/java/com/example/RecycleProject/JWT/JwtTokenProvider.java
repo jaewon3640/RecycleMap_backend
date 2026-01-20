@@ -37,12 +37,12 @@ public class JwtTokenProvider {
         공통로직부 이부분은 access token과 refresh token의 생성부
      */
 
-    public String createAccessToken(Long userId) {
-        return createToken(userId, accessExpSeconds);
+    public String createAccessToken(Long userId, Role role) {
+        return createToken(userId, role, accessExpSeconds);
     }
 
-    public String createRefreshToken(Long userId) {
-        return createToken(userId, refreshExpSeconds);
+    public String createRefreshToken(Long userId, Role role) {
+        return createToken(userId, role, refreshExpSeconds);
     }
 
     /*

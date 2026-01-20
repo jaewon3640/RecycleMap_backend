@@ -2,3 +2,18 @@ jwt:
   secret: "a826ffd6fd03cb43af649c33484461a4bf392ff9861bf66f0d8fe243f864884a"
   access-exp-min: 30
   refresh-exp-days: 14
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/recycle_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update   # 처음 테스트용: update / 운영: validate
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false

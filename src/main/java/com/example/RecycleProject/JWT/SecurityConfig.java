@@ -36,6 +36,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // REST API이므로 CSRF 비활성화
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용 안함
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/signup", "/api/auth/login").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN") // ADMIN 권한만 가능
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN") // 둘 다 가능
                         .anyRequest().authenticated()
