@@ -3,6 +3,9 @@ package com.example.RecycleProject.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(uniqueConstraints = {
         @UniqueConstraint(name="uk_region", columnNames={"city","district", "dong"})
@@ -38,6 +41,18 @@ public class Region {
 
         return region;
     }
+
+    /*
+        Trash Detail과 배출 요일은 양방향으로 하여야 서로를 조회 가능하다.
+     */
+
+    @OneToMany(mappedBy = "region")
+    private List<TrashDetail> details = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "region") // 부모의 이름
+    private List<DisposalSchedule> schedules = new ArrayList<>();
+
 
 
 }

@@ -1,6 +1,6 @@
 package com.example.RecycleProject.JWT;
 
-import com.example.RecycleProject.domain.Role;
+import com.example.RecycleProject.ENUM.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

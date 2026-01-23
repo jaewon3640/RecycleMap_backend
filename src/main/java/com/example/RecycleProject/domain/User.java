@@ -1,5 +1,6 @@
 package com.example.RecycleProject.domain;
 
+import com.example.RecycleProject.ENUM.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

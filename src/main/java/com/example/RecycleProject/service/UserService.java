@@ -5,15 +5,12 @@ import com.example.RecycleProject.DTO.LoginRequest;
 import com.example.RecycleProject.DTO.RegionDTO;
 import com.example.RecycleProject.Repository.UserRepository;
 import com.example.RecycleProject.domain.Region;
-import com.example.RecycleProject.domain.Role;
+import com.example.RecycleProject.ENUM.Role;
 import com.example.RecycleProject.domain.User;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
