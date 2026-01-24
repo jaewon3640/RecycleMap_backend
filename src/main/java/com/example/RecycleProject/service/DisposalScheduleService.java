@@ -1,11 +1,19 @@
 package com.example.RecycleProject.service;
 
+import com.example.RecycleProject.DTO.DisposalScheduleRequest;
+import com.example.RecycleProject.DTO.DisposalScheduleResponse;
 import com.example.RecycleProject.Repository.DisposalScheduleRepository;
+import com.example.RecycleProject.Repository.RegionRepository;
 import com.example.RecycleProject.domain.DisposalSchedule;
+import com.example.RecycleProject.domain.Region;
+import com.example.RecycleProject.exception.RegionNotFoundException;
+import com.example.RecycleProject.exception.ScheduleException;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,11 +23,38 @@ import org.springframework.transaction.annotation.Transactional;
 public class DisposalScheduleService {
     private final DisposalScheduleRepository disposalScheduleRepository;
 
+    private final RegionRepository regionRepository;
+
     //특정 지역과 카테고리에 해당하는 배출 일정 조회
-    @Transactional
+    /*
+        조회 에서는 엔티티 변환이 딱히 필요 없음 트랜젝션이 일어나지 않기 때문에
+     */
+    public DisposalSchedule getDisposalSchedule(DisposalScheduleRequest disposalDTO) {
+        Region region = regionRepository.findById(disposalDTO.getRegionId())
+                .orElseThrow(() -> new RegionNotFoundException("존재하지 않는 지역입니다."));
+
+        return disposalScheduleRepository.findByRegionAndCategory(region, disposalDTO.getCategory())
+                .orElseThrow(() -> new ScheduleException("일정이 없습니다."));
+
+    }
+
     
      // 특정 지역의 모든 배출일정을 조회
-    
+
     // 배출 일정 등록
+    // 1. 해당 지역이 실제로 존재하는지 확인하면서 객체를 가져오기
+    // 2, DTO를 바탕으로 엔티티 생성
+    // 3. DB에 저장후에 id를 반환한다.
+    // id반환 이유는? 상세페이지로 이동을 시키거나, 등록되었다는 문자를 날리기 위함
+
+    @Transactional
+    public Long saveSchedule(DisposalScheduleRequest dto) {
+        Region region = regionRepository.findById(dto.getRegionId())
+                .orElseThrow(() -> new RegionNotFoundException("존재하지 않는 지역입니다."));
+
+        DisposalSchedule schedule = dto.toEntity(region);
+
+        return disposalScheduleRepository.save(schedule).getId();
+    }
 
 }
