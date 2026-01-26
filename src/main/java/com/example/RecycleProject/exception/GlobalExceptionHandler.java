@@ -19,5 +19,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleAllException(Exception e) {
         return ResponseEntity.internalServerError().body("서버 내부 오류가 발생했습니다.");
     }
-    
+
+
 }

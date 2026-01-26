@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -38,8 +39,19 @@ public class DisposalScheduleService {
 
     }
 
-    
-     // 특정 지역의 모든 배출일정을 조회
+
+    // 특정 지역의 모든 배출일정을 조회
+    /*
+        이떄 지역으만 조회를 할수 있으니 파라미터는 DTO가 아닌 단순하게 하는것을 권장한다.
+        DTO로 해도는 되는데 카테고리등의 모든 값을 채워서 보내니 컨트롤러가 복잡해짐
+     */
+    public List<DisposalSchedule> getAllDisposalSchedule(Long regionId) {
+        Region region = regionRepository.findById(regionId)
+                .orElseThrow(() -> new RegionNotFoundException("존재하지 않는 지역입니다."));
+
+        return disposalScheduleRepository.findByRegion(region);
+
+    }
 
     // 배출 일정 등록
     // 1. 해당 지역이 실제로 존재하는지 확인하면서 객체를 가져오기
@@ -51,6 +63,11 @@ public class DisposalScheduleService {
     public Long saveSchedule(DisposalScheduleRequest dto) {
         Region region = regionRepository.findById(dto.getRegionId())
                 .orElseThrow(() -> new RegionNotFoundException("존재하지 않는 지역입니다."));
+
+
+        if (disposalScheduleRepository.existsByRegionAndCategory(region, dto.getCategory())) {
+            throw new ScheduleException("이미 등록된 일정입니다.");
+        }
 
         DisposalSchedule schedule = dto.toEntity(region);
 
