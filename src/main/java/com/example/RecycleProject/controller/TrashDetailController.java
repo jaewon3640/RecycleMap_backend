@@ -1,16 +1,11 @@
 package com.example.RecycleProject.controller;
 
 import com.example.RecycleProject.DTO.TrashDetailDTO;
-import com.example.RecycleProject.domain.DisposalSchedule;
-import com.example.RecycleProject.domain.TrashDetail;
 import com.example.RecycleProject.service.TrashDetailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /*

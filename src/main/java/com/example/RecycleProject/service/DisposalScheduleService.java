@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,12 +31,21 @@ public class DisposalScheduleService {
     /*
         조회 에서는 엔티티 변환이 딱히 필요 없음 트랜젝션이 일어나지 않기 때문에
      */
-    public DisposalSchedule getDisposalSchedule(DisposalScheduleRequest disposalDTO) {
+    public DisposalScheduleResponse getDisposalSchedule(DisposalScheduleRequest disposalDTO) {
         Region region = regionRepository.findById(disposalDTO.getRegionId())
                 .orElseThrow(() -> new RegionNotFoundException("존재하지 않는 지역입니다."));
 
-        return disposalScheduleRepository.findByRegionAndCategory(region, disposalDTO.getCategory())
-                .orElseThrow(() -> new ScheduleException("일정이 없습니다."));
+        Optional<DisposalSchedule> entityList
+                = disposalScheduleRepository.findByRegionAndCategory(region, disposalDTO.getCategory());
+
+        if(entityList.isPresent()){
+            DisposalSchedule schedule = entityList.get();
+            return new DisposalScheduleResponse(schedule);
+        }
+        else{
+            throw new ScheduleException("존재하지 않는 일정 입니다");
+        }
+
 
     }
 
@@ -45,20 +55,30 @@ public class DisposalScheduleService {
         이떄 지역으만 조회를 할수 있으니 파라미터는 DTO가 아닌 단순하게 하는것을 권장한다.
         DTO로 해도는 되는데 카테고리등의 모든 값을 채워서 보내니 컨트롤러가 복잡해짐
      */
-    public List<DisposalSchedule> getAllDisposalSchedule(Long regionId) {
+    public List<DisposalScheduleResponse> getAllDisposalSchedule(Long regionId) {
         Region region = regionRepository.findById(regionId)
                 .orElseThrow(() -> new RegionNotFoundException("존재하지 않는 지역입니다."));
 
-        return disposalScheduleRepository.findByRegion(region);
 
+        List<DisposalSchedule> byRegion = disposalScheduleRepository.findByRegion(region);
+
+        List<DisposalScheduleResponse> dtoList = new ArrayList<>();
+
+        for (DisposalSchedule schedule : byRegion) {
+            DisposalScheduleResponse disposalScheduleResponse = new DisposalScheduleResponse(schedule);
+            dtoList.add(disposalScheduleResponse);
+        }
+
+        return dtoList;
     }
 
-    // 배출 일정 등록
-    // 1. 해당 지역이 실제로 존재하는지 확인하면서 객체를 가져오기
-    // 2, DTO를 바탕으로 엔티티 생성
-    // 3. DB에 저장후에 id를 반환한다.
-    // id반환 이유는? 상세페이지로 이동을 시키거나, 등록되었다는 문자를 날리기 위함
-
+    /*
+        배출 일정 등록
+        1. 해당 지역이 실제로 존재하는지 확인하면서 객체를 가져오기
+        2, DTO를 바탕으로 엔티티 생성
+        3. DB에 저장후에 id를 반환한다.
+        id반환 이유는? 상세페이지로 이동을 시키거나, 등록되었다는 문자를 날리기 위함
+     */
     @Transactional
     public Long saveSchedule(DisposalScheduleRequest dto) {
         Region region = regionRepository.findById(dto.getRegionId())

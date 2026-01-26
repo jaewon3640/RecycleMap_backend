@@ -35,25 +35,19 @@ public class DisposalScheduleController {
     public ResponseEntity<DisposalScheduleResponse> getOne
     (@ModelAttribute @Valid DisposalScheduleRequest dto) {
 
-        DisposalSchedule schedule = disposalScheduleService.getDisposalSchedule(dto);
+        DisposalScheduleResponse schedule = disposalScheduleService.getDisposalSchedule(dto);
 
-        return ResponseEntity.ok(new DisposalScheduleResponse(schedule));
+        return ResponseEntity.ok(schedule);
     }
 
     // 특정 지역의 모든 일정을 조회
     @GetMapping("/region/{regionId}")
     public ResponseEntity<List<DisposalScheduleResponse>> getAll
     (@PathVariable("regionId") Long regionId){
-        List<DisposalScheduleResponse> responses = new ArrayList<>();
 
-        List<DisposalSchedule> allDisposalSchedule = disposalScheduleService.getAllDisposalSchedule(regionId);
+        List<DisposalScheduleResponse> allDisposalSchedule = disposalScheduleService.getAllDisposalSchedule(regionId);
 
-        for (DisposalSchedule schedule : allDisposalSchedule) {
-            DisposalScheduleResponse dto = new DisposalScheduleResponse(schedule);
-            responses.add(dto);
-        }
-
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(allDisposalSchedule);
     }
 
     /*
