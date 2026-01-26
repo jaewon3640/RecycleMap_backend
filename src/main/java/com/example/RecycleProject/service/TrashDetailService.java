@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,11 +55,16 @@ public class TrashDetailService {
         Region region = regionRepository.findById(regionId)
                 .orElseThrow(() -> new RegionNotFoundException("존재하지 않는 지역입니다."));
 
-        List<TrashDetail> byItemNameContainingAndRegion
+        List<TrashDetail> entityLit
                 = trashDetailRepository.findByItemNameContainingAndRegion(itemName, region);
 
-        for (TrashDetail trashDetail : byItemNameContainingAndRegion) {
+        //결과를 담을 DTO 그릇을 준비
+        List<TrashDetailDTO.Response> dtoList = new ArrayList<>();
 
+        for (TrashDetail trashDetail : entityLit) {
+            TrashDetailDTO.Response response = new TrashDetailDTO.Response(trashDetail);
+
+            dtoList.add(response);
         }
 
         /*
@@ -67,5 +73,7 @@ public class TrashDetailService {
             .map(TrashDetailDTO.Response::new)
             .toList(); stream 표현
          */
+
+        return dtoList;
     }
 }
