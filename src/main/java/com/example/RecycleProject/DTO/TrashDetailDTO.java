@@ -21,8 +21,8 @@ public class TrashDetailDTO {
         @NotNull(message = "지역정보는 필수 입니다.")
         private Long regionId;
 
-        @NotNull(message = "카테고리를 입력해주세요")
-        private Category category;
+        @NotBlank(message = "카테고리를 입력해주세요")
+        private String category;
 
         @NotBlank(message = "품목명을 입력해주세요")
         private String item_name;
@@ -34,8 +34,13 @@ public class TrashDetailDTO {
         private String caution; // 주의 사항
 
         public TrashDetail toEntity(Region region){
+
+            // 카테고리를 Enum으로 변환
+            // 이때 소문자로 반환되므로 UpperCase 적용해주기!
+            Category enumCategory = Category.valueOf(this.category.toUpperCase());
+
             TrashDetail trashDetail = TrashDetail.createTrashDetail
-                    (region, this.category, this.item_name, this.disposal_method, this.pre_treatment, this.caution);
+                    (region, enumCategory, this.item_name, this.disposal_method, this.pre_treatment, this.caution);
 
             return trashDetail;
         }
@@ -56,7 +61,7 @@ public class TrashDetailDTO {
 
         public Response(TrashDetail detail) {
             this.id = detail.getId();
-            this.itemName = detail.getItem_name();
+            this.itemName = detail.getItemName();
             this.category = detail.getCategory().name();
             this.method = detail.getDisposal_method();
             this.treatment = detail.getPre_treatment();

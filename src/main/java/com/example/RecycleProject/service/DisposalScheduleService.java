@@ -2,6 +2,7 @@ package com.example.RecycleProject.service;
 
 import com.example.RecycleProject.DTO.DisposalScheduleRequest;
 import com.example.RecycleProject.DTO.DisposalScheduleResponse;
+import com.example.RecycleProject.ENUM.Category;
 import com.example.RecycleProject.Repository.DisposalScheduleRepository;
 import com.example.RecycleProject.Repository.RegionRepository;
 import com.example.RecycleProject.domain.DisposalSchedule;
@@ -35,8 +36,9 @@ public class DisposalScheduleService {
         Region region = regionRepository.findById(disposalDTO.getRegionId())
                 .orElseThrow(() -> new RegionNotFoundException("존재하지 않는 지역입니다."));
 
+        Category category = Category.valueOf(disposalDTO.getCategory().toUpperCase());
         Optional<DisposalSchedule> entityList
-                = disposalScheduleRepository.findByRegionAndCategory(region, disposalDTO.getCategory());
+                = disposalScheduleRepository.findByRegionAndCategory(region, category);
 
         if(entityList.isPresent()){
             DisposalSchedule schedule = entityList.get();
@@ -84,8 +86,9 @@ public class DisposalScheduleService {
         Region region = regionRepository.findById(dto.getRegionId())
                 .orElseThrow(() -> new RegionNotFoundException("존재하지 않는 지역입니다."));
 
+        Category category = Category.valueOf(dto.getCategory().toUpperCase());
 
-        if (disposalScheduleRepository.existsByRegionAndCategory(region, dto.getCategory())) {
+        if (disposalScheduleRepository.existsByRegionAndCategory(region,category)) {
             throw new ScheduleException("이미 등록된 일정입니다.");
         }
 

@@ -30,6 +30,8 @@ public class SecurityConfig {
         -addFilterBefore : 필터가 실행되기 전에 인증정보를 넣어두는것
         -http.build() 최종 빌드하여주기
      */
+    /*
+        실전용
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -43,6 +45,21 @@ public class SecurityConfig {
                 )
                 // UsernamePasswordAuthenticationFilter 이전에 JwtAuthenticationFilter 실행
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+
+     */
+    //테스트용
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable()) // POST 테스트를 위해 CSRF 비활성화 (필수!)
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll() // 모든 요청을 로그인 없이 허용
+                )
+                .headers(headers -> headers.frameOptions(frame -> frame.disable())); // H2 Console 접근용
 
         return http.build();
     }

@@ -13,6 +13,7 @@ import lombok.Getter;
                 )
         })
 @Getter
+@Entity
 public class TrashDetail {
 
     @Id
@@ -27,7 +28,7 @@ public class TrashDetail {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    private String item_name;
+    private String itemName;
 
     private String disposal_method; // 배출방법
 
@@ -43,7 +44,7 @@ public class TrashDetail {
 
         trashDetail.region = region;
         trashDetail.category = category;
-        trashDetail.item_name = item_name;
+        trashDetail.itemName = item_name;
         trashDetail.disposal_method = disposal_method;
         trashDetail.pre_treatment = pre_treatment;
         trashDetail.caution = caution;

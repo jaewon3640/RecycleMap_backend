@@ -1,6 +1,7 @@
 package com.example.RecycleProject.service;
 
 import com.example.RecycleProject.DTO.TrashDetailDTO;
+import com.example.RecycleProject.ENUM.Category;
 import com.example.RecycleProject.Repository.RegionRepository;
 import com.example.RecycleProject.Repository.TrashDetailRepository;
 import com.example.RecycleProject.domain.Region;
@@ -32,13 +33,18 @@ public class TrashDetailService {
     /*
         1. 특정 지역과 카테고리로 배출요령 엔티티를 조회한다.
         dto 반환은 컨트롤러에서 하는것이 아닌 서비스에서 반환하자
+        dto에서 JSON 방식을 이용하는데 get하게 된다면? 이는 String 타입이므로!
+        물론 Enum으로 받아도 되는데 바로 400 에러가 뜨니 커스텀 예외처리 하ㅣㄱ 위해 변환하자
 
      */
     public TrashDetailDTO.Response getDetailByRegionAndCategory(TrashDetailDTO.Request dto) {
         Region region = regionRepository.findById(dto.getRegionId())
                 .orElseThrow(() -> new RegionNotFoundException("존재하지 않는 지역입니다."));
 
-        Optional<TrashDetail> byRegionAndCategory = trashDetailRepository.findByRegionAndCategory(region, dto.getCategory());
+        Category category = Category.valueOf(dto.getCategory().toUpperCase());
+
+        Optional<TrashDetail> byRegionAndCategory
+                = trashDetailRepository.findByRegionAndCategory(region, category);
 
         if (byRegionAndCategory.isPresent()) {
             TrashDetail trashDetail = byRegionAndCategory.get();

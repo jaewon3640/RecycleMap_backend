@@ -17,6 +17,7 @@ import lombok.Getter;
 )
 
 @Getter
+@Entity
 public class DisposalSchedule { // 배출일정
 
     @Id

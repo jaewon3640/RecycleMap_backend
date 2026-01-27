@@ -6,6 +6,7 @@ import com.example.RecycleProject.domain.DisposalSchedule;
 import com.example.RecycleProject.service.DisposalScheduleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/schedules")
+@Slf4j
 
 public class DisposalScheduleController {
 
@@ -56,6 +58,7 @@ public class DisposalScheduleController {
 
     @PostMapping("/save")
     public ResponseEntity<Long> save(@RequestBody @Valid DisposalScheduleRequest disposalScheduleRequest){
+
         Long id = disposalScheduleService.saveSchedule(disposalScheduleRequest);
         return ResponseEntity.ok(id);
     }
