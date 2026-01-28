@@ -17,3 +17,11 @@ spring:
       hibernate:
         format_sql: true
     open-in-view: false
+
+logging:
+  level:
+    root: info                           # 전체적인 기본 로그 레벨
+    com.example.RecycleProject: debug    # 내가 작성한 코드의 상세 로그 (개발용)
+    org.hibernate.SQL: debug             # 실행되는 SQL 쿼리 출력
+    org.hibernate.type.descriptor.sql: trace # SQL에 바인딩된 파라미터 값 확인
+

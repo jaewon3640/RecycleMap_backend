@@ -9,6 +9,7 @@ import com.example.RecycleProject.domain.TrashDetail;
 import com.example.RecycleProject.exception.RegionNotFoundException;
 import com.example.RecycleProject.exception.TrashDetailNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import java.util.Optional;
     1. 특정 지역 과 카테고리로 배출요령을 조회
     2. 품목 이름을 통해서 조회
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -38,8 +40,13 @@ public class TrashDetailService {
 
      */
     public TrashDetailDTO.Response getDetailByRegionAndCategory(TrashDetailDTO.Request dto) {
+        log.info("[TrashDetail 조회] RegionId : {} , Category : {}", dto.getRegionId(), dto.getCategory());
+
         Region region = regionRepository.findById(dto.getRegionId())
-                .orElseThrow(() -> new RegionNotFoundException("존재하지 않는 지역입니다."));
+                .orElseThrow(() -> {
+                    log.warn("[RegionNotFound] 존재하지 않는 지역 ID 조회 시도: {}", dto.getRegionId());
+                    return new RegionNotFoundException("존재하지 않는 지역입니다.");
+                });
 
         Category category = Category.valueOf(dto.getCategory().toUpperCase());
 

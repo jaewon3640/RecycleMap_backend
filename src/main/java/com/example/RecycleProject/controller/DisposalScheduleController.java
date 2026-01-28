@@ -37,7 +37,11 @@ public class DisposalScheduleController {
     public ResponseEntity<DisposalScheduleResponse> getOne
     (@ModelAttribute @Valid DisposalScheduleRequest dto) {
 
+        log.info("[GET] 일정 단건 조회 요청 - RegionId: {}, Category: {}", dto.getRegionId(), dto.getCategory());
+
         DisposalScheduleResponse schedule = disposalScheduleService.getDisposalSchedule(dto);
+
+        log.debug("조회된 일정 데이터: {}", schedule);
 
         return ResponseEntity.ok(schedule);
     }
@@ -47,8 +51,10 @@ public class DisposalScheduleController {
     public ResponseEntity<List<DisposalScheduleResponse>> getAll
     (@PathVariable("regionId") Long regionId){
 
+        log.info("지역별 전체 일정 조회 요청 -Region : {}", regionId);
         List<DisposalScheduleResponse> allDisposalSchedule = disposalScheduleService.getAllDisposalSchedule(regionId);
 
+        log.info("지약뱔 전체 일정 조회 완료 건수 : {}", allDisposalSchedule.size());
         return ResponseEntity.ok(allDisposalSchedule);
     }
 
@@ -59,7 +65,13 @@ public class DisposalScheduleController {
     @PostMapping("/save")
     public ResponseEntity<Long> save(@RequestBody @Valid DisposalScheduleRequest disposalScheduleRequest){
 
+        log.info("신규 일정 등록 요청 시작");
+        log.debug("등록 요청 상세 데이터 : {}", disposalScheduleRequest);
+
         Long id = disposalScheduleService.saveSchedule(disposalScheduleRequest);
+
+        log.info("신규 일정 등록 성공 -생성된 ID : {}", id);
+
         return ResponseEntity.ok(id);
     }
 

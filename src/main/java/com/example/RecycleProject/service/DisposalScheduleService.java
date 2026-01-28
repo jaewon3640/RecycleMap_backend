@@ -11,6 +11,7 @@ import com.example.RecycleProject.exception.RegionNotFoundException;
 import com.example.RecycleProject.exception.ScheduleException;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -33,19 +35,27 @@ public class DisposalScheduleService {
         조회 에서는 엔티티 변환이 딱히 필요 없음 트랜젝션이 일어나지 않기 때문에
      */
     public DisposalScheduleResponse getDisposalSchedule(DisposalScheduleRequest disposalDTO) {
+        log.info("[일정 단건 조회 시작] RegionId: {}, Category: {}", disposalDTO.getRegionId(), disposalDTO.getCategory());
+
         Region region = regionRepository.findById(disposalDTO.getRegionId())
                 .orElseThrow(() -> new RegionNotFoundException("존재하지 않는 지역입니다."));
 
-        Category category = Category.valueOf(disposalDTO.getCategory().toUpperCase());
-        Optional<DisposalSchedule> entityList
-                = disposalScheduleRepository.findByRegionAndCategory(region, category);
 
-        if(entityList.isPresent()){
-            DisposalSchedule schedule = entityList.get();
-            return new DisposalScheduleResponse(schedule);
+        try {
+            Category category = Category.valueOf(disposalDTO.getCategory().toUpperCase());
+            Optional<DisposalSchedule> entityList = disposalScheduleRepository.findByRegionAndCategory(region, category);
+
+            if (entityList.isPresent()) {
+                log.info("[일정 단건 조회 성공] Schedule ID: {}", entityList.get().getId());
+                return new DisposalScheduleResponse(entityList.get());
+            } else {
+                log.warn("[ScheduleNotFound] 일정 정보 없음 - Region: {}, Category: {}", region.getCity(), category);
+                throw new ScheduleException("존재하지 않는 일정 입니다");
+            }
         }
-        else{
-            throw new ScheduleException("존재하지 않는 일정 입니다");
+        catch (IllegalArgumentException e) {
+            log.error("[InvalidCategory] 잘못된 카테고리 값: {}", disposalDTO.getCategory());
+            throw e;
         }
 
 
