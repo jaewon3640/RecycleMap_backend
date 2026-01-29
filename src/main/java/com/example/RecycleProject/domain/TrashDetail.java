@@ -40,9 +40,12 @@ public class TrashDetail {
             (Region region, Category category,
              String item_name, String disposal_method,
              String pre_treatment, String caution) {
+
         TrashDetail trashDetail = new TrashDetail();
 
-        trashDetail.region = region;
+        trashDetail.setRegion(region);
+
+        //trashDetail.region = region;
         trashDetail.category = category;
         trashDetail.itemName = item_name;
         trashDetail.disposal_method = disposal_method;
@@ -50,5 +53,24 @@ public class TrashDetail {
         trashDetail.caution = caution;
 
         return trashDetail;
+    }
+
+    /*
+        연관관계 편의 메서드
+        Region과 양방향이기에 매핑해주어야 된다.
+
+     */
+
+    public void setRegion(Region region){
+        // 기존관계가 있다면 제거해 줄수 있도록 하자
+        if (this.region != null) {
+            this.region.getSchedules().remove(this);
+        }
+        this.region = region;
+
+        // 상대방 리스트에 내가 없을때만 추가하자
+        if(!region.getDetails().contains(this)) {
+            region.getDetails().add(this);
+        }
     }
 }

@@ -49,13 +49,30 @@ public class DisposalSchedule { // 배출일정
         }
         DisposalSchedule schedule = new DisposalSchedule();
 
-        schedule.region = region;
+        //schedule.region = region; set 메서드에서 이미 할당해줌
         schedule. category = category;
         schedule.disposal_day = disposal_day;
         schedule.disposal_time = disposal_time;
 
+        schedule.setRegion(region);
+
         return schedule;
 
     }
+
+
+    //연관관계 매핑 메서드
+    /*
+        반대편 외래키도 저장을 한다!
+        안하면...? 반대쪽 설정이 안되겠지요...? 그러면 저장시에
+        여기는 세팅이 되는데 Region 엔티티는 업데이트가 안되지!
+     */
+    public void setRegion(Region region) {
+        this.region = region;
+        if (!region.getSchedules().contains(this)) {
+            region.getSchedules().add(this);
+        }
+    }
+
 
 }
