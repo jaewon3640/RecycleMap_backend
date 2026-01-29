@@ -64,7 +64,7 @@ public class TrashDetail {
     public void setRegion(Region region){
         // 기존관계가 있다면 제거해 줄수 있도록 하자
         if (this.region != null) {
-            this.region.getSchedules().remove(this);
+            this.region.getDetails().remove(this);
         }
         this.region = region;
 

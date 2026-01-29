@@ -3,6 +3,7 @@ package com.example.RecycleProject.domain;
 import com.example.RecycleProject.ENUM.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ import java.util.List;
 // 테이블 전략을 통해서 짜자 Colmn은 확장에 용이 하지 않음
 @Getter
 @Setter //대신에 초기화 메서드를 설정하는것이 유리할듯 하다.
+@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,12 +44,6 @@ public class User {
     role은 USER로 고정한다. DB에서 ADMIN 변경
      */
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "region_id", nullable = true)
-    private Region region;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Board> boards = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -56,26 +52,32 @@ public class User {
     private LocalDateTime updatedAt;
 
 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id", nullable = true)
+    private Region region;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Board> boards = new ArrayList<>();
+
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = this.createdAt;
     }
-    // 저장 로직이 자동으로 호출되도록
 
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public User() {}
 
     public static User createUser(String email, String password, String name) {
         User user = new User();
         user.email = email;
         user.password = password;
         user.name = name;
-        // 여기서 비즈니스 규칙에 맞는 기본값을 설정할 수도 있습니다.
         user.role = Role.USER;
         return user;
     }
