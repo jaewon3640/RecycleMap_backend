@@ -26,8 +26,11 @@ import java.util.UUID;
 
 public class LogAspect {
 
+    private final LogTrace logTrace; // 별도로 만든 LogTrace 주입
+
     // 범위를 표현하기 위한 바구니
-    @Pointcut("execution(* com.example.RecycleProject.controller..*.*(..))")
+    @Pointcut("execution(* com.example.RecycleProject.controller..*.*(..)) || " +
+            "execution(* com.example.RecycleProject.service..*.*(..))")
     public void cut() {
     }
 
@@ -65,37 +68,19 @@ public class LogAspect {
 
     @Around("cut()")
     public Object execute(ProceedingJoinPoint joinPoint) throws Throwable {
-        long startTimeMs = System.currentTimeMillis();
-        String traceId = UUID.randomUUID().toString().substring(0, 8); // 짧은 ID 생성
-        String message = joinPoint.getSignature().toShortString(); // 메서드 정보
-
+        TraceStatus status = null;
         try {
-            // [시작 로그]
-            log.info("[{}] START : {}", traceId, message);
+            // 직접 UUID를 만들지 않고, logTrace에게 맡깁니다.
+            // logTrace가 ThreadLocal을 보고 ID를 유지할지, 레벨을 높일지 결정합니다.
+            status = logTrace.begin(joinPoint.getSignature().toShortString());
 
-            // 파라미터 로그 (선택 사항)
-            Object[] args = joinPoint.getArgs();
-            if (args.length > 0) {
-                log.info("[{}] ARGS  : {}", traceId, args);
-            }
-
-            // [핵심 로직 실행]
             Object result = joinPoint.proceed();
 
-            // [종료 로그] 실행 시간 계산
-            long stopTimeMs = System.currentTimeMillis();
-            long resultTimeMs = stopTimeMs - startTimeMs;
-            log.info("[{}] END   : {} | TIME: {}ms", traceId, message, resultTimeMs);
-
+            logTrace.end(status);
             return result;
-
         } catch (Exception e) {
-            // [예외 로그]
-            long stopTimeMs = System.currentTimeMillis();
-            long resultTimeMs = stopTimeMs - startTimeMs;
-            log.error("[{}] EX    : {} | TIME: {}ms | MSG: {}",
-                    traceId, message, resultTimeMs, e.getMessage());
-            throw e; // 예외는 반드시 다시 던져야 합니다.
+            logTrace.exception(status, e);
+            throw e;
         }
     }
 }
