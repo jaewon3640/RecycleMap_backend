@@ -24,5 +24,5 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findByUserOrderByCreatedAtDesc(User user);
 
     // 제목으로 검색하는 기능
-    List<Board> findByTitleContaining(String title);
+    List<Board> findByUserAndTitleContainingOrderByCreatedAtDesc(User user, String title);
 }

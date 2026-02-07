@@ -71,6 +71,8 @@ public class BoardService {
         return new BoardDTO.Response(board);
     }
 
+    // 다건 조회
+
     public List<BoardDTO.Response> findAllByUserDESC(Long userId){
 
         User user = userRepository.findById(userId).
@@ -87,6 +89,19 @@ public class BoardService {
         }
 
         return dtoList;
+    }
+
+    // 제목으로 조회
+    public List<BoardDTO.Response> searchByName(Long userId, String title){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을수 없습니다."));
+
+        List<Board> myBoards = boardRepository.findByUserAndTitleContainingOrderByCreatedAtDesc(user, title);
+
+        //dto로 변환
+        return myBoards.stream()
+                .map(board -> new BoardDTO.Response())
+                .toList();
     }
 
 
