@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 public class BoardDTO {
 
     @Data
-
     public static class Request{
 
         @NotNull(message = "유저 Id는 필수 입니다.")

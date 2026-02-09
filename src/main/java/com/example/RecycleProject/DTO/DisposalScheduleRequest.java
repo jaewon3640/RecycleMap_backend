@@ -18,7 +18,7 @@ public class DisposalScheduleRequest {
     //객체가 아닌 Region Id를 사용해야만 된다.
 
     @NotBlank(message = "카테고리는 필수 입니다.")
-    private String category;
+    private Category category;
 
     @NotBlank(message = "배출요일을 입력해주세요")
     private String disposalDay;
@@ -28,10 +28,8 @@ public class DisposalScheduleRequest {
     // 받을때 엔티티로 변환하자!
     // 근데 받는게 숫자인데...? 이럴때는 Service 계층에서 Region을 찾아서 주입해주자!
     public DisposalSchedule toEntity(Region region) {
-        Category category1 = Category.valueOf(this.category.toUpperCase());
-
         return DisposalSchedule.createSchedule
-                (region, category1, this.disposalDay, this.disposalTime);
+                (region, this.category, this.disposalDay, this.disposalTime);
     }
 
 }

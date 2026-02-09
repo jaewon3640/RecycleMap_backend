@@ -26,13 +26,16 @@ public class LogTrace {
     }
 
     private void releaseTraceId() {
-        if (traceIdHolder.get().isFirstLevel()) traceIdHolder.remove(); // 마지막 단계면 주머니 비우기
-        else traceIdHolder.set(traceIdHolder.get().createPreviousId()); // 한 단계 밖으로 나감
+        if (traceIdHolder.get().isFirstLevel())
+            traceIdHolder.remove(); // 마지막 단계면 주머니 비우기
+        else
+            traceIdHolder.set(traceIdHolder.get().createPreviousId()); // 한 단계 밖으로 나감
     }
 
     private String addSpace(String prefix, int level) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < level; i++) sb.append((i == level - 1) ? "|" + prefix : "|   ");
+        for (int i = 0; i < level; i++)
+            sb.append((i == level - 1) ? "|" + prefix : "|   ");
         return sb.toString();
     }
 

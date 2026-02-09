@@ -5,6 +5,7 @@ import com.example.RecycleProject.Repository.BoardRepository;
 import com.example.RecycleProject.Repository.UserRepository;
 import com.example.RecycleProject.domain.Board;
 import com.example.RecycleProject.domain.User;
+import com.example.RecycleProject.exception.AccessDeniedException;
 import com.example.RecycleProject.exception.BoardNotFoundException;
 import com.example.RecycleProject.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -45,10 +46,13 @@ public class BoardService {
     }
 
     @Transactional
-    public void updateBoard(Long userId, BoardDTO.Request dto) {
-        Board board = boardRepository.findById(userId)
+    public void updateBoard(Long boardId, Long userId, BoardDTO.Request dto) {
+        Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BoardNotFoundException("수정할 게시물이 존재하지 않습니다."));
 
+        if (!board.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("수정 권한이 없습니다.");
+        }
         board.updateBoard(dto.getTitle(), dto.getContent());
 
         // dirty check 으로 자동으로 반영이 된다.
@@ -100,7 +104,7 @@ public class BoardService {
 
         //dto로 변환
         return myBoards.stream()
-                .map(board -> new BoardDTO.Response())
+                .map(board -> new BoardDTO.Response(board))
                 .toList();
     }
 
