@@ -8,6 +8,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -30,28 +35,41 @@ public class SecurityConfig {
         -addFilterBefore : 필터가 실행되기 전에 인증정보를 넣어두는것
         -http.build() 최종 빌드하여주기
      */
-    /*
-        실전용
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // REST API이므로 CSRF 비활성화
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용 안함
+                // 1. CORS 설정 연결
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // 2. CSRF 비활성화 (JWT 사용 시 필수)
+                .csrf(csrf -> csrf.disable())
+
+                // 3. 세션 사용 안 함 (STATELESS 설정)
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // 4. 요청별 인가(Authorization) 설정
                 .authorizeHttpRequests(auth -> auth
+                        // 회원가입, 로그인은 누구나 접근 가능
                         .requestMatchers("/api/auth/signup", "/api/auth/login").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN") // ADMIN 권한만 가능
-                        .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN") // 둘 다 가능
+                        // 관리자 기능은 ADMIN 권한 필요
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // 나머지 모든 요청은 인증된 사용자만 가능
                         .anyRequest().authenticated()
                 )
-                // UsernamePasswordAuthenticationFilter 이전에 JwtAuthenticationFilter 실행
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+
+                // 5. JWT 인증 필터 추가 (UsernamePasswordAuthenticationFilter 보다 먼저 실행)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                        UsernamePasswordAuthenticationFilter.class)
+
+                // 6. H2 Console 등 프레임 사용을 위한 설정 (개발 시 필요)
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()));
 
         return http.build();
     }
 
-
-     */
     //테스트용
+    /*
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -62,5 +80,19 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(frame -> frame.disable())); // H2 Console 접근용
 
         return http.build();
+    }
+     */
+
+    // SecurityConfig.java에 추가 권장
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:3000")); // 프론트 포트
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }

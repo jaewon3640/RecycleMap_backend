@@ -47,7 +47,7 @@ public class LoginController {
         User user = userService.login(request);
 
         String accessToken = jwtTokenProvider.createAccessToken(user.getId(),user.getRole());
-        String refreshToken = jwtTokenProvider.createAccessToken(user.getId(),user.getRole());
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(),user.getRole());
 
         TokenResponse response = TokenResponse.builder()
                 .accessToken(accessToken)
