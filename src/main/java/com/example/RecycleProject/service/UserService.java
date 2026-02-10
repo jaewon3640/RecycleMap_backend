@@ -7,6 +7,7 @@ import com.example.RecycleProject.Repository.UserRepository;
 import com.example.RecycleProject.domain.Region;
 import com.example.RecycleProject.ENUM.Role;
 import com.example.RecycleProject.domain.User;
+import com.example.RecycleProject.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -51,10 +52,10 @@ public class UserService {
      */
     public User login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new UserNotFoundException("존재하지 않는 회원입니다."));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
+            throw new UserNotFoundException("비밀번호가 일치하지 않습니다.");
         }
         return user;
     }
@@ -62,7 +63,7 @@ public class UserService {
     // 중복이면 예외로 막기
     private void validateDuplicate(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalStateException("이미 존재하는 이메일입니다.");
+            throw new UserNotFoundException("이미 존재하는 이메일입니다.");
         }
     }
 
@@ -74,12 +75,13 @@ public class UserService {
     // 회원 단건 조회
     public User findOne(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다. id=" + userId));
+                .orElseThrow(() -> new UserNotFoundException("해당 유저가 없습니다. id=" + userId));
     }
 
+    @Transactional
     public void updateMyRegion(Long userId, RegionDTO dto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을수 없습니다."));
 
         Region region = regionService.getOrCreateRegion(dto);
 

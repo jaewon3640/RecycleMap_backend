@@ -50,11 +50,8 @@ public class Region {
     private List<TrashDetail> details = new ArrayList<>();
 
 
-    @OneToMany(mappedBy = "region") // 부모의 이름
+    @OneToMany(mappedBy = "region", cascade = CascadeType.REMOVE, orphanRemoval = true) // 부모의 이름
     private List<DisposalSchedule> schedules = new ArrayList<>();
-
-
-
 
 
 }
