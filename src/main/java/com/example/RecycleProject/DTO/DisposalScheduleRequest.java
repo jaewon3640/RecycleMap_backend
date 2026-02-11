@@ -17,10 +17,9 @@ public class DisposalScheduleRequest {
     //사용자는 글자를 보나, 이제 실제로는 Region시에 id를 통해서 판별해야되므로
     //객체가 아닌 Region Id를 사용해야만 된다.
 
-    @NotBlank(message = "카테고리는 필수 입니다.")
+    @NotNull
     private Category category;
 
-    @NotBlank(message = "배출요일을 입력해주세요")
     private String disposalDay;
 
     private String disposalTime;

@@ -22,7 +22,7 @@ public class TrashDetailDTO {
         private Long regionId;
 
         @NotBlank(message = "카테고리를 입력해주세요")
-        private String category;
+        private Category category;
 
         @NotBlank(message = "품목명을 입력해주세요")
         private String item_name;
@@ -37,10 +37,8 @@ public class TrashDetailDTO {
 
             // 카테고리를 Enum으로 변환
             // 이때 소문자로 반환되므로 UpperCase 적용해주기!
-            Category enumCategory = Category.valueOf(this.category.toUpperCase());
-
             TrashDetail trashDetail = TrashDetail.createTrashDetail
-                    (region, enumCategory, this.item_name, this.disposal_method, this.pre_treatment, this.caution);
+                    (region, this.category, this.item_name, this.disposal_method, this.pre_treatment, this.caution);
 
             return trashDetail;
         }

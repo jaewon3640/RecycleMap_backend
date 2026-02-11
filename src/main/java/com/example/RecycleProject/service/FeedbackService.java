@@ -38,6 +38,8 @@ public class FeedbackService {
      */
     @Transactional
     public Long saveFeedback(FeedbackDTO.Request dto, Long userId){
+        System.out.println("DEBUG: userId = " + userId);
+        System.out.println("DEBUG: trashDetailId = " + dto.getTrashDetailId());
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을수 없습니다."));

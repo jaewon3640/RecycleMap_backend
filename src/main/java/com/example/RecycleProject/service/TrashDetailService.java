@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /*
     1. 특정 지역 과 카테고리로 배출요령을 조회
@@ -48,7 +49,7 @@ public class TrashDetailService {
                     return new RegionNotFoundException("존재하지 않는 지역입니다.");
                 });
 
-        Category category = Category.valueOf(dto.getCategory().toUpperCase());
+        Category category = dto.getCategory();
 
         Optional<TrashDetail> byRegionAndCategory
                 = trashDetailRepository.findByRegionAndCategory(region, category);
@@ -88,5 +89,19 @@ public class TrashDetailService {
          */
 
         return dtoList;
+    }
+
+    //3. 카테고리를 이용한 전체 조회
+    public List<TrashDetailDTO.Response> getAllDetailByCategory(Category category, Long regionId) {
+        // String을 Enum으로 변환
+        Region region = regionRepository.findById(regionId)
+                .orElseThrow(() -> new RegionNotFoundException("해당 지역을 찾을수 없습니다."));
+
+        List<TrashDetailDTO.Response> list = trashDetailRepository.findAllByCategoryAndRegion(category, region)
+                .stream()
+                .map(trashDetail -> new TrashDetailDTO.Response(trashDetail))
+                .toList();
+
+        return list;
     }
 }

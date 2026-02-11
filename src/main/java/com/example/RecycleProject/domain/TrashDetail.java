@@ -1,6 +1,7 @@
 package com.example.RecycleProject.domain;
 
 import com.example.RecycleProject.ENUM.Category;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -21,9 +22,10 @@ public class TrashDetail {
     @Column(name = "detail_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id")
     private Region region;
+
 
     @Enumerated(EnumType.STRING)
     private Category category;

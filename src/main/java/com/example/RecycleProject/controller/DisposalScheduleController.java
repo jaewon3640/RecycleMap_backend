@@ -17,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/schedules")
 @Slf4j
+@CrossOrigin(origins = "http://localhost:3000")
 
 public class DisposalScheduleController {
 
@@ -35,7 +36,7 @@ public class DisposalScheduleController {
      */
     @GetMapping("/disposalOne")
     public ResponseEntity<DisposalScheduleResponse> getOne
-    (@ModelAttribute @Valid DisposalScheduleRequest dto) {
+    (@ModelAttribute DisposalScheduleRequest dto) {
 
         log.info("[GET] 일정 단건 조회 요청 - RegionId: {}, Category: {}", dto.getRegionId(), dto.getCategory());
 

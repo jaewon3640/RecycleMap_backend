@@ -17,4 +17,8 @@ public interface TrashDetailRepository extends JpaRepository<TrashDetail, Long> 
 
     // 2. 품목 이름을 통해서 조회
     List<TrashDetail> findByItemNameContainingAndRegion(String itemName, Region region);
+
+    // 3. 카테고리 이름을 사용한 조회
+    List<TrashDetail> findAllByCategoryAndRegion(Category category, Region region);
+
 }

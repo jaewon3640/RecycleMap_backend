@@ -24,23 +24,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        String path = request.getRequestURI();
+        String method = request.getMethod();
+        System.out.println("DEBUG Filter: 요청 경로 = " + path + ", 메서드 = " + method);
         String token = resolveToken(request);
+        System.out.println("DEBUG Filter: 추출된 토큰 = " + token);
 
+        // JwtAuthenticationFilter.java 내부 수정 제안
+        // JwtAuthenticationFilter.java 내부 수정
         if (token != null && jwtTokenProvider.isValid(token)) {
+            // 1. 토큰에서 Long 타입의 ID를 추출 (기존 getUserId 메서드 활용)
             Long userId = jwtTokenProvider.getUserId(token);
-            String role = jwtTokenProvider.getRole(token); // 토큰에서 역할 추출
 
-            // SimpleGrantedAuthority를 사용하여 권한 부여
-            // 즉 권한 객체를 생성하여주고(역할에 따라)
+            // 2. 권한 설정 (ROLE_ 접두사 포함)
             List<SimpleGrantedAuthority> authorities =
-                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
+                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 
-            //Authrntication 객체 또한 생성해주는 코드
+            // 3. 첫 번째 인자(Principal)로 userId(Long)를 전달
+            // 이 값이 컨트롤러의 @AuthenticationPrincipal Long userId로 들어갑니다.
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(userId, null, authorities);
 
-
-            //성한 "신분증"을 보안 보관함에 넣는다. 이 작업이 완료되어야 컨트롤러에서 "로그인 된 사용자"로 인식가능
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 

@@ -49,15 +49,22 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 // 4. 요청별 인가(Authorization) 설정
+                // SecurityConfig.java
+                // SecurityConfig.java 수정
+                // SecurityConfig.java 수정
                 .authorizeHttpRequests(auth -> auth
-                        // 회원가입, 로그인은 누구나 접근 가능
-                        .requestMatchers("/api/auth/signup", "/api/auth/login").permitAll()
-                        // 관리자 기능은 ADMIN 권한 필요
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        // 나머지 모든 요청은 인증된 사용자만 가능
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // ⭐ 구체적인 경로를 위로!
+                        .requestMatchers("/api/user/region").authenticated()
+                        .requestMatchers("/api/feedbacks/save").authenticated() // 다시 authenticated로 변경
+
+                        // ⭐ 나머지 조회용은 아래로
+                        .requestMatchers("/api/trash-detail/**", "/api/schedules/**", "/api/feedbacks/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
-
                 // 5. JWT 인증 필터 추가 (UsernamePasswordAuthenticationFilter 보다 먼저 실행)
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                         UsernamePasswordAuthenticationFilter.class)

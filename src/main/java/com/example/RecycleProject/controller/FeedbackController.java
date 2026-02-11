@@ -4,26 +4,38 @@ import com.example.RecycleProject.DTO.FeedbackDTO;
 import com.example.RecycleProject.service.FeedbackService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.security.core.Authentication; // 추가
+
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/feedbacks")
+@Slf4j
 public class FeedbackController {
 
     private final FeedbackService feedbackService;
 
     // 피드백 등록
-    @PostMapping("/{userId}")
+    @PostMapping("/save")
     public ResponseEntity<Long> write(@RequestBody @Valid FeedbackDTO.Request request,
-                                      @AuthenticationPrincipal Long userId) {
+                                      @AuthenticationPrincipal Long userId) { // ⭐ 파라미터 변경
 
+        // 필터에서 제대로 넣었다면 여기서 null이 나오지 않습니다.
+        if (userId == null) {
+            log.error("인증된 사용자 정보를 찾을 수 없습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        log.info("컨트롤러에서 확인된 userId: {}", userId);
         Long feedbackId = feedbackService.saveFeedback(request, userId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(feedbackId);
