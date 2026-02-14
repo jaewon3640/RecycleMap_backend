@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/board")
+@CrossOrigin(origins = "http://localhost:3000")
 @Slf4j
 
 public class BoardController {
@@ -40,11 +41,12 @@ public class BoardController {
     // 3. 제목으로 검색
     @GetMapping("/search-name")
     public ResponseEntity<List<BoardDTO.Response>> search(
-            @RequestParam Long userId,
-            @RequestParam String title
+            @RequestParam(required = false) String title
     ){
+        System.out.println("검색 키워드: " + (title == null ? "null" : "'" + title + "'"));
+
         List<BoardDTO.Response> responses =
-                boardService.searchByName(userId, title);
+                boardService.findAllorSearch(title);
         return ResponseEntity.ok(responses);
     }
 }

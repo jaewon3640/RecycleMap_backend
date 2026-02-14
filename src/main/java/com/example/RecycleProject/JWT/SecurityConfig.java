@@ -35,41 +35,34 @@ public class SecurityConfig {
         -addFilterBefore : 필터가 실행되기 전에 인증정보를 넣어두는것
         -http.build() 최종 빌드하여주기
      */
+    // SecurityConfig.java 수정
+    // SecurityConfig.java의 filterChain 메서드 부분 수정
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // 1. CORS 설정 연결
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
-                // 2. CSRF 비활성화 (JWT 사용 시 필수)
                 .csrf(csrf -> csrf.disable())
-
-                // 3. 세션 사용 안 함 (STATELESS 설정)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // 4. 요청별 인가(Authorization) 설정
-                // SecurityConfig.java
-                // SecurityConfig.java 수정
-                // SecurityConfig.java 수정
                 .authorizeHttpRequests(auth -> auth
+                        // 1. OPTIONS (Preflight) 허용
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        // ⭐ 구체적인 경로를 위로!
-                        .requestMatchers("/api/user/region").authenticated()
-                        .requestMatchers("/api/feedbacks/save").authenticated() // 다시 authenticated로 변경
+                        // 2. 게시판 관련 조회 경로를 가장 우선순위로 두어 permitAll 설정
+                        // 이 설정이 .anyRequest().authenticated() 보다 반드시 위에 있어야 합니다.
+                        .requestMatchers("/api/board/search-name", "/api/board/{id}").permitAll()
+                        .requestMatchers("/api/board/**").permitAll()
 
-                        // ⭐ 나머지 조회용은 아래로
-                        .requestMatchers("/api/trash-detail/**", "/api/schedules/**", "/api/feedbacks/**").permitAll()
+                        // 3. 인증이 필요한 다른 경로들
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/user/region").authenticated()
+                        .requestMatchers("/api/feedbacks/save").authenticated()
 
                         .anyRequest().authenticated()
                 )
-                // 5. JWT 인증 필터 추가 (UsernamePasswordAuthenticationFilter 보다 먼저 실행)
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                         UsernamePasswordAuthenticationFilter.class)
-
-                // 6. H2 Console 등 프레임 사용을 위한 설정 (개발 시 필요)
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()));
 
         return http.build();

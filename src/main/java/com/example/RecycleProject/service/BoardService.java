@@ -75,7 +75,7 @@ public class BoardService {
         return new BoardDTO.Response(board);
     }
 
-    // 다건 조회
+    // 다건 조회(해당유저의 글을 모두 조회)
 
     public List<BoardDTO.Response> findAllByUserDESC(Long userId){
 
@@ -95,16 +95,19 @@ public class BoardService {
         return dtoList;
     }
 
-    // 제목으로 조회
-    public List<BoardDTO.Response> searchByName(Long userId, String title){
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을수 없습니다."));
+    // 제목으로 조회(사용자 만이 아닌 전체 조회 혹은 제목을 통한 조회 메서드로 변경하자)
+    public List<BoardDTO.Response> findAllorSearch(String title){
 
-        List<Board> myBoards = boardRepository.findByUserAndTitleContainingOrderByCreatedAtDesc(user, title);
+        List<Board> boards;
 
+        if (title == null || title.trim().isEmpty()) {
+            boards = boardRepository.findAllByOrderByCreatedAtDesc();
+        }else{
+            boards = boardRepository.findByTitleContainingOrderByCreatedAtDesc(title);
+        }
         //dto로 변환
-        return myBoards.stream()
-                .map(board -> new BoardDTO.Response(board))
+        return boards.stream()
+                .map(BoardDTO.Response::new) // 생성자 참조 사용 (new BoardDTO.Response(board))
                 .toList();
     }
 

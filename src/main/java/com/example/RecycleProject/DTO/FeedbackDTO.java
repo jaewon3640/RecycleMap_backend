@@ -50,12 +50,15 @@ public class FeedbackDTO {
             // 누가 이 피드백을 남겼는지 관리자가 파악해야 되기 때문에!
             private String userName;
 
+            private Long trashDetailId;
+
             public Response(Feedback feedback) {
                 this.id = feedback.getId();
                 this.feedbackTypeDescription = feedback.getFeedbackType().getDescription(); // Enum의 한글명 등                this
                 this.content = feedback.getContent();
                 this.createdAt = feedback.getCreatedAt();
                 this.userName = feedback.getUser().getName();
+                this.trashDetailId = feedback.getTrashDetail().getId();
             }
         }
 }

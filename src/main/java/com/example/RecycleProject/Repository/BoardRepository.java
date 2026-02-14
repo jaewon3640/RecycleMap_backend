@@ -23,6 +23,12 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     // 특정 유저의 모든 게시글을 최신순으로 조회
     List<Board> findByUserOrderByCreatedAtDesc(User user);
 
-    // 제목으로 검색하는 기능
+    // 전체 최신순 글로만 조회하는 기능
+    List<Board> findAllByOrderByCreatedAtDesc();
+
+    //검색어가 있다면? 검색어 제목 포함 조회
+    List<Board> findByTitleContainingOrderByCreatedAtDesc(String title);
+
+    // 5. (추가 팁) 특정 유저가 작성한 글 중에서 제목 검색이 필요한 경우
     List<Board> findByUserAndTitleContainingOrderByCreatedAtDesc(User user, String title);
 }
