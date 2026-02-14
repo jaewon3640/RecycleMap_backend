@@ -46,11 +46,11 @@ public class BoardService {
     }
 
     @Transactional
-    public void updateBoard(Long boardId, Long userId, BoardDTO.Request dto) {
+    public void updateBoard(Long boardId, String email, BoardDTO.Request dto) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BoardNotFoundException("수정할 게시물이 존재하지 않습니다."));
 
-        if (!board.getUser().getId().equals(userId)) {
+        if (!board.getUser().getEmail().equals(email)) {
             throw new AccessDeniedException("수정 권한이 없습니다.");
         }
         board.updateBoard(dto.getTitle(), dto.getContent());
@@ -69,6 +69,8 @@ public class BoardService {
     //단건조회, 모두 조회(특정 유저의 것만 최신순으로), 제목으로 조회,
 
     public BoardDTO.Response findOneBoard(Long boardId){
+        System.out.println("=== 컨트롤러 진입 성공! 요청 ID: " + boardId + " ===");
+
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BoardNotFoundException("조회할 게시물이 없습니다."));
 

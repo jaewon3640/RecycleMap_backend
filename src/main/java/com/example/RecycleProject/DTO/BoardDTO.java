@@ -42,6 +42,7 @@ public class BoardDTO {
         private Long id;
         private String title;
         private String content;
+        private String authorEmail;
         private String authorName; // 작성자 이름
         private String status; // 게시글 상태
         private LocalDateTime createdAt; // 생성 일자
@@ -54,6 +55,7 @@ public class BoardDTO {
             this.authorName = board.getUser().getName();
             this.status = board.getStatus().toString();
             this.createdAt = board.getCreatedAt();
+            this.authorEmail = board.getUser().getEmail();
         }
     }
 

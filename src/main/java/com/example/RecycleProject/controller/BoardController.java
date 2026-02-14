@@ -34,7 +34,12 @@ public class BoardController {
     @GetMapping("/{id}")
     public ResponseEntity<BoardDTO.Response> getBoard(
             @PathVariable Long id){
+        log.info("게시글 상세 조회 요청 - ID: {}", id);
         BoardDTO.Response oneBoard = boardService.findOneBoard(id);
+
+        log.info("조회된 게시글 데이터: Title={}, Content={}, Author={}",
+                oneBoard.getTitle(), oneBoard.getContent(), oneBoard.getAuthorName());
+
         return ResponseEntity.ok(oneBoard);
     }
 
@@ -48,5 +53,21 @@ public class BoardController {
         List<BoardDTO.Response> responses =
                 boardService.findAllorSearch(title);
         return ResponseEntity.ok(responses);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Long> deleteBoard(
+            @PathVariable Long id
+    ){
+        boardService.deleteBoard(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{boardId}")
+    public ResponseEntity<Long> updateBoard(
+            @PathVariable Long boardId, String email,
+            @RequestBody  BoardDTO.Request request){
+        boardService.updateBoard(boardId, email, request);
+        return ResponseEntity.ok().build();
     }
 }

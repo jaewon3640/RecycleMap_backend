@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LogTrace {
     // 여러 쓰레드(사용자)가 섞이지 않게 '내 주머니'에만 신분증을 보관함
-    private ThreadLocal<TraceId> traceIdHolder = new ThreadLocal<>();
+    private ThreadLocal<com.example.RecycleProject.aop.TraceId> traceIdHolder = new ThreadLocal<>();
 
     public TraceStatus begin(String message) {
         // 1. 신분증 확인 (없으면 새로 만들고, 있으면 level만 높임)
