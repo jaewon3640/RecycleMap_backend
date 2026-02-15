@@ -53,17 +53,18 @@ public class LoginController {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .nickname(user.getName())
+                .role(user.getRole().name())
                 .build();
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponse> me(@AuthenticationPrincipal Long userId) {
+    public ResponseEntity<TokenResponse.UserResponse> me(@AuthenticationPrincipal Long userId) {
         User user = userService.findOne(userId);
 
         // UserResponse DTO로 변환하여 민감 정보(비밀번호 등) 제외
-        UserResponse response = UserResponse.builder()
+        TokenResponse.UserResponse response = TokenResponse.UserResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .nickname(user.getName())

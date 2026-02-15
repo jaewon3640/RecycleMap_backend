@@ -52,6 +52,7 @@ public class BoardController {
 
         List<BoardDTO.Response> responses =
                 boardService.findAllorSearch(title);
+
         return ResponseEntity.ok(responses);
     }
 
@@ -70,4 +71,15 @@ public class BoardController {
         boardService.updateBoard(boardId, email, request);
         return ResponseEntity.ok().build();
     }
+
+    // ********************관리자  기능********************//
+    /*
+    1.) 게시판의 대한 답변 기능
+    2. ) 답변 수정
+    3. ) 답변 삭제
+    4. ) 이때 사용자의 게시글의 상태를 WAIting에서 답변 완료로 변환할것
+
+     */
+
+
 }

@@ -1,13 +1,13 @@
 package com.example.RecycleProject.domain;
 
-import com.example.RecycleProject.DTO.BoardDTO;
 import com.example.RecycleProject.ENUM.BoardStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.lang.reflect.Member;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -85,4 +85,14 @@ public class Board {
         this.title = title;
         this.content = content;
     }
+
+    //***********Reply 관련 메서드 + 필드 ***********/
+
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BoardReply> boardReplyList = new ArrayList<>();
+
+    public void updateStatus(BoardStatus status) {
+        this.status = status;
+    }
+
 }
