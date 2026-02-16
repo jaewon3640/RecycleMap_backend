@@ -1,5 +1,6 @@
 package com.example.RecycleProject.domain;
 
+import com.example.RecycleProject.ENUM.BoardStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,6 +28,11 @@ public class BoardReply {
     @JoinColumn(name = "board_id")
     private Board board;
 
+    // Reply를 만들어서 반환해주는 메서드
+    public static void toEntity() {
+
+    }
+
     @PrePersist
     public void prePersist(){
         this.createdAt = LocalDateTime.now();
@@ -40,7 +46,30 @@ public class BoardReply {
         this.updateAt = LocalDateTime.now();
     }
 
+
+    // 이떄 생성시에 연관관계를 매핑! 양방향이기 때문이지!
+
+    public static BoardReply createBoardReply(Board board, String replyContent, String authorName) {
+        BoardReply boardReply = new BoardReply();
+
+        boardReply.replyContent = replyContent;
+        boardReply.authorName = authorName;
+        boardReply.board = board;
+
+        boardReply.setBoard(board);
+
+        return boardReply;
+    }
+
     //연관관계 편의 메서드(생성시 연관관계를 맺어야 된다!)
+    public void setBoard(Board board) {
+        this.board = board;
+        board.getBoardReplyList().add(this);
+        board.updateStatus(BoardStatus.ANSWERED);
+    }
 
-
+    public void update(String replyContent, String authorName) {
+        this.replyContent = replyContent;
+        this.authorName = authorName;
+    }
 }

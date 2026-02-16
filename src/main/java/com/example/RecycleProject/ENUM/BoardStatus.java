@@ -5,7 +5,7 @@ package com.example.RecycleProject.ENUM;
  */
 public enum BoardStatus {
     WAITING("대기중"),
-    COMPLETE("답변 완료");
+    ANSWERED("답변 완료");
 
     private final String description;
 
