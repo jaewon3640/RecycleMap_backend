@@ -54,8 +54,6 @@ public class BoardReply {
 
         boardReply.replyContent = replyContent;
         boardReply.authorName = authorName;
-        boardReply.board = board;
-
         boardReply.setBoard(board);
 
         return boardReply;

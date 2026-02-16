@@ -48,7 +48,7 @@ public class BoardReplyService {
         BoardReply boardReply = boardReplyRepository.findById(boardReplyId)
                 .orElseThrow(() -> new ReplyNotFoundException("해당 답변을 찾을수 없습니다."));
 
-        boardReply.update(dto.getContent(), dto.getAuthorName());
+        boardReply.update(dto.getReplyContent(), dto.getAuthorName());
 
     }
 
