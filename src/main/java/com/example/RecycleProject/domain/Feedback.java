@@ -1,5 +1,6 @@
 package com.example.RecycleProject.domain;
 
+import com.example.RecycleProject.ENUM.FeedbackStatus;
 import com.example.RecycleProject.ENUM.FeedbackType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -7,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -32,6 +35,9 @@ public class Feedback {
         this.createdAt = LocalDateTime.now();
     }
 
+    @Enumerated(EnumType.STRING)
+    private FeedbackStatus feedbackStatus;
+
     // 연관관계 필드
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -42,8 +48,12 @@ public class Feedback {
     @JoinColumn(name = "detail_id")
     private TrashDetail trashDetail;
 
+    @OneToMany(mappedBy = "feedback", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    List<FeedbackReply> feedbackReplies = new ArrayList<>();
+
     public static Feedback createFeedback
-            (User user, TrashDetail detail, FeedbackType feedBackType, String content){
+            (User user, TrashDetail detail, FeedbackType feedBackType, String content) {
+
         Feedback feedback = new Feedback();
         //연관관계 매핑(단방향이므로 필드만 설정)
         feedback.user = user;
@@ -52,6 +62,8 @@ public class Feedback {
         //데이터 매핑
         feedback.feedbackType = feedBackType;
         feedback.content = content;
+
+        feedback.feedbackStatus = FeedbackStatus.ANSWERED;
 
         return feedback;
     }
@@ -66,4 +78,7 @@ public class Feedback {
     }
 
 
+    public void updateStatus(FeedbackStatus feedbackStatus) {
+        this.feedbackStatus = feedbackStatus;
+    }
 }

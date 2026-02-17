@@ -2,6 +2,8 @@ package com.example.RecycleProject.DTO;
 
 import com.example.RecycleProject.domain.Board;
 import com.example.RecycleProject.domain.BoardReply;
+import com.example.RecycleProject.domain.Feedback;
+import com.example.RecycleProject.domain.FeedbackReply;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;

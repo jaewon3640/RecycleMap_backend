@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class BoardReply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "boardreply_id")
     private long id;
 
     private String replyContent;
@@ -27,11 +28,6 @@ public class BoardReply {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private Board board;
-
-    // Reply를 만들어서 반환해주는 메서드
-    public static void toEntity() {
-
-    }
 
     @PrePersist
     public void prePersist(){
@@ -69,5 +65,6 @@ public class BoardReply {
     public void update(String replyContent, String authorName) {
         this.replyContent = replyContent;
         this.authorName = authorName;
+        this.updateAt = LocalDateTime.now();
     }
 }
