@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 public class BoardReply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "boardreply_id")
-    private long id;
+    @Column(name = "board_reply_id")
+    private Long id;
 
     private String replyContent;
 

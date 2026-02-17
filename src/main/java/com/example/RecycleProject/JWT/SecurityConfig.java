@@ -54,6 +54,8 @@ public class SecurityConfig {
                         // 이 설정이 .anyRequest().authenticated() 보다 반드시 위에 있어야 합니다.
                         .requestMatchers("/api/board/search-name", "/api/board/{id}").permitAll()
                         .requestMatchers("/api/board/**").permitAll()
+                        .requestMatchers("/api/boardReply/**").permitAll()
+
 
                         // 3. 인증이 필요한 다른 경로들
                         .requestMatchers("/api/auth/**").permitAll()
