@@ -55,6 +55,7 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/trash-detail/**").permitAll()
+                        .requestMatchers("/api/schedules/**").permitAll()
 
                         // 2. 게시판 관련 조회 경로를 가장 우선순위로 두어 permitAll 설정
                         // 이 설정이 .anyRequest().authenticated() 보다 반드시 위에 있어야 합니다.
