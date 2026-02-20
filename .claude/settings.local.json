@@ -5,7 +5,13 @@
       "Bash(netstat:*)",
       "Bash(findstr:*)",
       "Bash(tasklist:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(git push:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(docker login:*)",
+      "Bash(docker build:*)",
+      "Bash(docker push:*)"
     ]
   }
 }
