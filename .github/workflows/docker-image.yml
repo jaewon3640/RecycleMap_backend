@@ -76,9 +76,9 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # 기존 my-app 컨테이너 정리
-            docker stop my-app || true
-            docker rm my-app || true
+            cd ~/RecycleProjTempoary
+            docker pull jaewon3640/recycle-app:latest
+            docker-compose up -d --no-deps app
 
             # 8080 포트를 쓰고 있는 다른 컨테이너도 정리
             CONTAINER_ID=$(docker ps -q --filter "publish=8080")
