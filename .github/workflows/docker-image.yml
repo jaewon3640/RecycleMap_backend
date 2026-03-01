@@ -91,6 +91,7 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/my-app:latest
             docker run -d \
               --name my-app \
+              --network ec2-user_default \
               -p 8080:8080 \
               --restart unless-stopped \
               ${{ secrets.DOCKER_USERNAME }}/my-app:latest
