@@ -8,6 +8,21 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    # 테스트용 MySQL 컨테이너
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: recycle_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       # 1. 코드 체크아웃
       - name: Checkout code
@@ -20,24 +35,40 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # 3. Gradle 빌드
+      # 3. Gradlew 실행 권한 부여
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      # 4. MySQL 준비 대기
+      - name: Wait for MySQL
+        run: |
+          until mysqladmin ping -h 127.0.0.1 --silent; do
+            echo "MySQL 시작 대기중..."
+            sleep 2
+          done
+
+      # 5. Gradle 빌드 (테스트 포함)
       - name: Build with Gradle
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/recycle_test
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: root
         run: ./gradlew clean build
 
-      # 4. Docker Hub 로그인
+      # 6. Docker Hub 로그인
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 5. Docker 이미지 빌드 & Push
+      # 7. Docker 이미지 빌드 & Push
       - name: Build and Push Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/my-app:latest .
-          docker push ${{ secrets.DOCKER_USERNAME }}/my-app:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/recycle-app:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/recycle-app:latest
 
-      # 6. EC2에 SSH 접속 → 새 이미지로 컨테이너 재시작
+      # 8. EC2에 배포
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -45,11 +76,6 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            docker pull ${{ secrets.DOCKER_USERNAME }}/my-app:latest
-            docker stop my-app || true
-            docker rm my-app || true
-            docker run -d \
-              --name my-app \
-              -p 8080:8080 \
-              --restart unless-stopped \
-              ${{ secrets.DOCKER_USERNAME }}/my-app:latest
+            cd ~
+            docker pull jaewon3640/recycle-app:latest
+            docker-compose -f docker-compose.prod.yml up -d --no-deps app
