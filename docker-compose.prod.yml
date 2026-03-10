@@ -20,7 +20,20 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-
+  # ──────────────────────────────────
+  # Redis
+  # ──────────────────────────────────
+  redis:
+    image:  redis:8.0
+    container_name: recycle-redis
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   # ──────────────────────────────────
   # Spring Boot App (Docker Hub 이미지 사용)
   # ──────────────────────────────────
@@ -38,6 +51,7 @@ services:
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
+
 
   # ──────────────────────────────────
   # React Frontend (Docker Hub 이미지 사용)

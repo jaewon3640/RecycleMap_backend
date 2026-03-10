@@ -4,6 +4,10 @@ jwt:
   refresh-exp-days: 14
 
 spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
   datasource:
     url: jdbc:mysql://localhost:3306/recycle_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root

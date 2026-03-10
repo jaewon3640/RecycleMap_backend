@@ -12,6 +12,8 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_CHARSET: utf8mb4
       MYSQL_COLLATION: utf8mb4_unicode_ci
+    ports:
+      - "3307:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
@@ -20,6 +22,23 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+
+  # ──────────────────────────────────
+  # Redis
+  # ──────────────────────────────────
+  redis:
+    image: redis:latest
+    container_name: recycle-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # ──────────────────────────────────
   # Spring Boot App
@@ -33,12 +52,16 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
       JWT_SECRET: ${JWT_SECRET}
 
   # ──────────────────────────────────
@@ -57,3 +80,4 @@ services:
 
 volumes:
   mysql-data:
+  redis-data:
