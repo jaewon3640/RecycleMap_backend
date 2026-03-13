@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.io.Serializable;
 
 @Getter
 public class TrashDetailDTO {
@@ -21,10 +22,8 @@ public class TrashDetailDTO {
         @NotNull(message = "지역정보는 필수 입니다.")
         private Long regionId;
 
-        @NotBlank(message = "카테고리를 입력해주세요")
         private Category category;
 
-        @NotBlank(message = "품목명을 입력해주세요")
         private String item_name;
 
         private String disposal_method; // 배출방법
@@ -48,7 +47,8 @@ public class TrashDetailDTO {
         수정이나 삭제 요청 고려 아이디 반환, 상세 페이지도 고려
      */
     @Data
-    public static class Response{
+    @NoArgsConstructor
+    public static class Response implements Serializable{
         private Long id;
         private String itemName;
         private String category;

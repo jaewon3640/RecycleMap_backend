@@ -3,9 +3,11 @@ package com.example.RecycleProject.DTO;
 import com.example.RecycleProject.domain.DisposalSchedule;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.io.Serializable;
 
 @Data
-public class DisposalScheduleResponse {
+@NoArgsConstructor
+public class DisposalScheduleResponse implements Serializable {
     private Long id;
     private String category;
     private String dayOfWeek;

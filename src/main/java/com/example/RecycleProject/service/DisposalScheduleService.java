@@ -12,6 +12,8 @@ import com.example.RecycleProject.exception.ScheduleException;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,6 +69,7 @@ public class DisposalScheduleService {
         이떄 지역으만 조회를 할수 있으니 파라미터는 DTO가 아닌 단순하게 하는것을 권장한다.
         DTO로 해도는 되는데 카테고리등의 모든 값을 채워서 보내니 컨트롤러가 복잡해짐
      */
+    @Cacheable(value = "schedule", key = "#regionId")
     public List<DisposalScheduleResponse> getAllDisposalSchedule(Long regionId) {
         Region region = regionRepository.findById(regionId)
                 .orElseThrow(() -> new RegionNotFoundException("존재하지 않는 지역입니다."));
@@ -91,6 +94,7 @@ public class DisposalScheduleService {
         3. DB에 저장후에 id를 반환한다.
         id반환 이유는? 상세페이지로 이동을 시키거나, 등록되었다는 문자를 날리기 위함
      */
+    @CacheEvict(value = "schedule", key = "#dto.regionId")
     @Transactional
     public Long saveSchedule(DisposalScheduleRequest dto) {
         Region region = regionRepository.findById(dto.getRegionId())

@@ -10,15 +10,12 @@ import com.example.RecycleProject.exception.RegionNotFoundException;
 import com.example.RecycleProject.exception.TrashDetailNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /*
     1. 특정 지역 과 카테고리로 배출요령을 조회
@@ -40,6 +37,7 @@ public class TrashDetailService {
         물론 Enum으로 받아도 되는데 바로 400 에러가 뜨니 커스텀 예외처리 하ㅣㄱ 위해 변환하자
 
      */
+    @Cacheable(value = "TrashDetail", key = "#dto.regionId + ':' + #dto.category")
     public TrashDetailDTO.Response getDetailByRegionAndCategory(TrashDetailDTO.Request dto) {
         log.info("[TrashDetail 조회] RegionId : {} , Category : {}", dto.getRegionId(), dto.getCategory());
 
@@ -62,9 +60,9 @@ public class TrashDetailService {
         }
     }
 
-        /*
-            2. 품목 이름을 이용해서 전체 조회
-         */
+    /*
+        2. 품목 이름을 이용해서 전체 조회 (검색어가 다양해 캐싱 미적용)
+     */
     public List<TrashDetailDTO.Response> searchByItemName(String itemName, Long regionId){
         Region region = regionRepository.findById(regionId)
                 .orElseThrow(() -> new RegionNotFoundException("존재하지 않는 지역입니다."));
@@ -92,6 +90,7 @@ public class TrashDetailService {
     }
 
     //3. 카테고리를 이용한 전체 조회
+    @Cacheable(value = "TrashDetail", key = "'all:' + #regionId + ':' + #category")
     public List<TrashDetailDTO.Response> getAllDetailByCategory(Category category, Long regionId) {
         // String을 Enum으로 변환
         Region region = regionRepository.findById(regionId)

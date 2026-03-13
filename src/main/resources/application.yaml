@@ -14,9 +14,15 @@ spring:
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:seed_data.sql
+
   jpa:
     hibernate:
       ddl-auto: update   # 처음 테스트용: update / 운영: validate
+    defer-datasource-initialization: true  # JPA 테이블 생성 후 SQL 실행
     properties:
       hibernate:
         format_sql: true
