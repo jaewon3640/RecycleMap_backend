@@ -8,10 +8,13 @@ import com.example.RecycleProject.domain.User;
 import com.example.RecycleProject.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Duration;
 
 import static com.example.RecycleProject.DTO.JwtDTO.*;
 
@@ -21,6 +24,7 @@ import static com.example.RecycleProject.DTO.JwtDTO.*;
 public class LoginController {
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTemplate<String, Object> redisTemplate;
 
 
     @PostMapping("/signup")
@@ -48,6 +52,12 @@ public class LoginController {
 
         String accessToken = jwtTokenProvider.createAccessToken(user.getId(),user.getRole());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(),user.getRole());
+
+        redisTemplate.opsForValue().set(
+                "refresh:" + user.getId(),
+                refreshToken,
+                Duration.ofDays(14)
+        );
 
         TokenResponse response = TokenResponse.builder()
                 .accessToken(accessToken)
