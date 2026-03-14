@@ -69,6 +69,27 @@ public class LoginController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@AuthenticationPrincipal Long userId,
+                                         jakarta.servlet.http.HttpServletRequest request) {
+        // 1. Access Token 추출
+        String bearerToken = request.getHeader("Authorization");
+        String accessToken = bearerToken.substring(7);
+
+        // 2. Access Token 남은 만료시간만큼 블랙리스트 등록
+        long remainingSeconds = jwtTokenProvider.getRemainingSeconds(accessToken);
+        redisTemplate.opsForValue().set(
+                "blacklist:" + accessToken,
+                "logout",
+                Duration.ofSeconds(remainingSeconds)
+        );
+
+        // 3. Refresh Token 삭제
+        redisTemplate.delete("refresh:" + userId);
+
+        return ResponseEntity.ok("로그아웃 성공");
+    }
+
     @GetMapping("/me")
     public ResponseEntity<TokenResponse.UserResponse> me(@AuthenticationPrincipal Long userId) {
         User user = userService.findOne(userId);

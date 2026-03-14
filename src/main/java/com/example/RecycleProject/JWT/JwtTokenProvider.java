@@ -99,4 +99,12 @@ public class JwtTokenProvider {
         return Jwts.parser().verifyWith(key).build()
                 .parseSignedClaims(token).getPayload().get("role", String.class);
     }
+
+    // 토큰의 남은 만료시간(초) 반환 - 블랙리스트 TTL 설정에 사용
+    public long getRemainingSeconds(String token) {
+        Date expiration = Jwts.parser().verifyWith(key).build()
+                .parseSignedClaims(token).getPayload().getExpiration();
+        long remaining = expiration.getTime() - System.currentTimeMillis();
+        return Math.max(remaining / 1000, 0);
+    }
 }

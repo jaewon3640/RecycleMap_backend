@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,7 +19,8 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     // 사용자의 한번의 요청에 대해 한번만 실행되도록 보장 자원낭비 감소
 
-    private final JwtTokenProvider jwtTokenProvider; //JWT 생성/검증/파싱 담당 클래스
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -32,7 +34,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // JwtAuthenticationFilter.java 내부 수정 제안
         // JwtAuthenticationFilter.java 내부 수정
-        if (token != null && jwtTokenProvider.isValid(token)) {
+        // 블랙리스트 확인 - 로그아웃된 토큰이면 인증 처리 skip
+        boolean isBlacklisted = token != null &&
+                redisTemplate.hasKey("blacklist:" + token);
+
+        if (token != null && !isBlacklisted && jwtTokenProvider.isValid(token)) {
             // 1. 토큰에서 Long 타입의 ID를 추출 (기존 getUserId 메서드 활용)
             Long userId = jwtTokenProvider.getUserId(token);
 
