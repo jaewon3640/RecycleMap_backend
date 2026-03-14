@@ -72,20 +72,39 @@ public class LoginController {
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@AuthenticationPrincipal Long userId,
                                          jakarta.servlet.http.HttpServletRequest request) {
-        // 1. Access Token 추출
+        // 1. Access Token 추출 (null 방어)
         String bearerToken = request.getHeader("Authorization");
-        String accessToken = bearerToken.substring(7);
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            String accessToken = bearerToken.substring(7);
 
-        // 2. Access Token 남은 만료시간만큼 블랙리스트 등록
-        long remainingSeconds = jwtTokenProvider.getRemainingSeconds(accessToken);
-        redisTemplate.opsForValue().set(
-                "blacklist:" + accessToken,
-                "logout",
-                Duration.ofSeconds(remainingSeconds)
-        );
+            // 2. Access Token 남은 만료시간만큼 블랙리스트 등록
+            //    만료된 토큰이면 ExpiredJwtException이 발생할 수 있으므로 try-catch 처리
+            try {
+                long remainingSeconds = jwtTokenProvider.getRemainingSeconds(accessToken);
+                if (remainingSeconds > 0) {
+                    redisTemplate.opsForValue().set(
+                            "blacklist:" + accessToken,
+                            "logout",
+                            Duration.ofSeconds(remainingSeconds)
+                    );
+                }
+            } catch (Exception e) {
+                // 토큰이 이미 만료되었거나 유효하지 않으면 블랙리스트 등록 불필요
+            }
+        }
 
-        // 3. Refresh Token 삭제
-        redisTemplate.delete("refresh:" + userId);
+        // 3. Refresh Token 삭제 - userId가 null이면 토큰에서 직접 추출
+        Long resolvedUserId = userId;
+        if (resolvedUserId == null && bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            try {
+                resolvedUserId = jwtTokenProvider.getUserId(bearerToken.substring(7));
+            } catch (Exception e) {
+                // 토큰에서 userId 추출 실패 시 무시
+            }
+        }
+        if (resolvedUserId != null) {
+            redisTemplate.delete("refresh:" + resolvedUserId);
+        }
 
         return ResponseEntity.ok("로그아웃 성공");
     }
