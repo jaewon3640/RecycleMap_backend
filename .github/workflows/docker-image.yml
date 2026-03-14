@@ -8,7 +8,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
-    # 테스트용 MySQL 컨테이너
+    # 테스트용 컨테이너
     services:
       mysql:
         image: mysql:8.0
@@ -19,6 +19,16 @@ jobs:
           - 3306:3306
         options: >-
           --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -50,9 +60,11 @@ jobs:
       # 5. Gradle 빌드 (테스트 포함)
       - name: Build with Gradle
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/recycle_test
+          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/recycle_test?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: root
+          SPRING_REDIS_HOST: 127.0.0.1
+          SPRING_REDIS_PORT: 6379
         run: ./gradlew clean build
 
       # 6. Docker Hub 로그인
