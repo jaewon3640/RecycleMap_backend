@@ -26,14 +26,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String path = request.getRequestURI();
-        String method = request.getMethod();
-        System.out.println("DEBUG Filter: 요청 경로 = " + path + ", 메서드 = " + method);
         String token = resolveToken(request);
-        System.out.println("DEBUG Filter: 추출된 토큰 = " + token);
 
-        // JwtAuthenticationFilter.java 내부 수정 제안
-        // JwtAuthenticationFilter.java 내부 수정
         // 블랙리스트 확인 - 로그아웃된 토큰이면 인증 처리 skip
         boolean isBlacklisted = token != null &&
                 redisTemplate.hasKey("blacklist:" + token);
@@ -42,9 +36,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 1. 토큰에서 Long 타입의 ID를 추출 (기존 getUserId 메서드 활용)
             Long userId = jwtTokenProvider.getUserId(token);
 
-            // 2. 권한 설정 (ROLE_ 접두사 포함)
+            // 2. 권한 설정 (토큰의 role 클레임 기반)
+            String role = jwtTokenProvider.getRole(token);
             List<SimpleGrantedAuthority> authorities =
-                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
 
             // 3. 첫 번째 인자(Principal)로 userId(Long)를 전달
             // 이 값이 컨트롤러의 @AuthenticationPrincipal Long userId로 들어갑니다.
