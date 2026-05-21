@@ -24,7 +24,7 @@ services:
   # Redis
   # ──────────────────────────────────
   redis:
-    image:  redis:8.0
+    image: redis:7
     container_name: recycle-redis
     restart: unless-stopped
     volumes:
@@ -38,11 +38,13 @@ services:
   # Spring Boot App (Docker Hub 이미지 사용)
   # ──────────────────────────────────
   app:
-    image: jaewon3640/recycle-app:latest
+    image: jaewon0009/recycle-app:latest
     container_name: recycle-app
     restart: unless-stopped
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     ports:
       - "8080:8080"
@@ -50,6 +52,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
       JWT_SECRET: ${JWT_SECRET}
 
 
@@ -67,3 +71,4 @@ services:
 
 volumes:
   mysql-data:
+  redis-data:

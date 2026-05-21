@@ -6,7 +6,8 @@ import com.example.RecycleProject.service.TrashDetailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.CacheControl;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -35,18 +36,14 @@ public class TrashDetailController {
         return ResponseEntity.ok(result);
     }
 
-    /*
-        품목 명으로 조회
-     */
     @GetMapping("/name")
-    public ResponseEntity<List<TrashDetailDTO.Response>> getByItemName
-            (@RequestParam String itemName,
-             @RequestParam Long regionId) {
+    public ResponseEntity<Page<TrashDetailDTO.Response>> getByItemName(
+            @RequestParam String itemName,
+            @RequestParam Long regionId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
-        List<TrashDetailDTO.Response> entityLists =
-                trashDetailService.searchByItemName(itemName, regionId);
-
-        return ResponseEntity.ok(entityLists);
+        return ResponseEntity.ok(trashDetailService.searchByItemName(itemName, regionId, PageRequest.of(page, size)));
     }
 
     /*

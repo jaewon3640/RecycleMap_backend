@@ -12,6 +12,10 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
+@Table(name = "board", indexes = {
+        @Index(name = "idx_board_user_created", columnList = "user_id, created_at DESC"),
+        @Index(name = "idx_board_created",      columnList = "created_at DESC")
+})
 public class Board {
 
     @Id

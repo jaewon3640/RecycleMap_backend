@@ -9,9 +9,12 @@ import lombok.Getter;
         name = "trash_detail",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uk_region_category", // 제약 조건 이름
-                        columnNames = {"region_id", "category"} // 이 두 컬럼의 조합은 유일해야 함
+                        name = "uk_region_category",
+                        columnNames = {"region_id", "category"}
                 )
+        },
+        indexes = {
+                @Index(name = "idx_trash_region_item", columnList = "region_id, itemName")
         })
 @Getter
 @Entity

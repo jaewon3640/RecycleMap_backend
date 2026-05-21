@@ -11,9 +11,10 @@ import com.example.RecycleProject.exception.TrashDetailNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,33 +61,13 @@ public class TrashDetailService {
         }
     }
 
-    /*
-        2. 품목 이름을 이용해서 전체 조회 (검색어가 다양해 캐싱 미적용)
-     */
-    public List<TrashDetailDTO.Response> searchByItemName(String itemName, Long regionId){
+    // 품목 이름 검색 (검색어가 다양해 캐싱 미적용, 페이징 적용)
+    public Page<TrashDetailDTO.Response> searchByItemName(String itemName, Long regionId, Pageable pageable) {
         Region region = regionRepository.findById(regionId)
                 .orElseThrow(() -> new RegionNotFoundException("존재하지 않는 지역입니다."));
 
-        List<TrashDetail> entityLit
-                = trashDetailRepository.findByItemNameContainingAndRegion(itemName, region);
-
-        //결과를 담을 DTO 그릇을 준비
-        List<TrashDetailDTO.Response> dtoList = new ArrayList<>();
-
-        for (TrashDetail trashDetail : entityLit) {
-            TrashDetailDTO.Response response = new TrashDetailDTO.Response(trashDetail);
-
-            dtoList.add(response);
-        }
-
-        /*
-        return trashDetailRepository.findByItemNameContainingAndRegion(itemName, region)
-            .stream()
-            .map(TrashDetailDTO.Response::new)
-            .toList(); stream 표현
-         */
-
-        return dtoList;
+        return trashDetailRepository.findByItemNameContainingAndRegion(itemName, region, pageable)
+                .map(TrashDetailDTO.Response::new);
     }
 
     //3. 카테고리를 이용한 전체 조회
