@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,8 +21,9 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping("/write")
-    public ResponseEntity<Long> write(@RequestBody @Valid BoardDTO.Request request) {
-        return ResponseEntity.ok(boardService.write(request));
+    public ResponseEntity<Long> write(@RequestBody @Valid BoardDTO.Request request,
+                                      @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(boardService.write(request, userId));
     }
 
     @GetMapping("/{id}")

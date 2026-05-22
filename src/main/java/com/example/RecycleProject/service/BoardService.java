@@ -25,8 +25,8 @@ public class BoardService {
     private final UserRepository userRepository;
 
     @Transactional
-    public Long write(BoardDTO.Request dto) {
-        User user = userRepository.findById(dto.getUserId())
+    public Long write(BoardDTO.Request dto, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("해당 아이디의 사용자가 존재하지 않습니다."));
 
         Board saveBoard = boardRepository.save(dto.toEntity(user));

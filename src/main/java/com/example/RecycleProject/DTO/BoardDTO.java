@@ -16,9 +16,6 @@ public class BoardDTO {
     @Data
     public static class Request{
 
-        @NotNull(message = "유저 Id는 필수 입니다.")
-        private Long userId;
-        
         @NotBlank(message = "제목은 필수 입니다.")
         @Size(min = 1, max = 100, message = "제목은 1자 이상 100자 이하이여야 됩니다.")
         private String title;
