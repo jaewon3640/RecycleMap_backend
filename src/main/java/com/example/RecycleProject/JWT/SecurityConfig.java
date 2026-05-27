@@ -59,11 +59,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/trash-detail/**").permitAll()
                         .requestMatchers("/api/schedules/**").permitAll()
 
-                        // 2. 게시판 관련 조회 경로를 가장 우선순위로 두어 permitAll 설정
-                        // 이 설정이 .anyRequest().authenticated() 보다 반드시 위에 있어야 합니다.
-                        .requestMatchers("/api/board/search-name", "/api/board/{id}").permitAll()
-                        .requestMatchers("/api/board/**").permitAll()
-                        .requestMatchers("/api/boardReply/**").permitAll()
+                        // 2. 게시판 조회는 인증 불필요, 작성/수정/삭제는 인증 필요
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/board/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/boardReply/**").permitAll()
+                        .requestMatchers("/api/board/write").authenticated()
+                        .requestMatchers("/api/board/**").authenticated()
+                        .requestMatchers("/api/boardReply/**").authenticated()
 
 
                         // 3. 인증이 필요한 다른 경로들
