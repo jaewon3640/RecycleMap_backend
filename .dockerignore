@@ -1,0 +1,7 @@
+.gradle/
+build/
+out/
+*.pem
+*.log
+*.csv
+savelocal.sql

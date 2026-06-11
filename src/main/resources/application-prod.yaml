@@ -1,0 +1,17 @@
+spring:
+  sql:
+    init:
+      mode: never   # 재시작 시 seed_data.sql 재실행 방지
+  jpa:
+    hibernate:
+      ddl-auto: update   # 최초 배포 후 validate로 변경 권장
+    properties:
+      hibernate:
+        format_sql: false
+
+logging:
+  level:
+    root: warn
+    com.example.RecycleProject: info
+    org.hibernate.SQL: warn
+    org.hibernate.type.descriptor.sql: warn
