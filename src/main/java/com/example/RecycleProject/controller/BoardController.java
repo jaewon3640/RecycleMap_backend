@@ -49,16 +49,24 @@ public class BoardController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
-        boardService.deleteBoard(id);
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long id,
+                                            @AuthenticationPrincipal Long userId) {
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        boardService.deleteBoard(id, userId);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{boardId}")
     public ResponseEntity<Void> updateBoard(
-            @PathVariable Long boardId, String email,
-            @RequestBody BoardDTO.Request request) {
-        boardService.updateBoard(boardId, email, request);
+            @PathVariable Long boardId,
+            @AuthenticationPrincipal Long userId,
+            @RequestBody @Valid BoardDTO.Request request) {
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        boardService.updateBoard(boardId, userId, request);
         return ResponseEntity.ok().build();
     }
 }

@@ -34,21 +34,24 @@ public class BoardService {
     }
 
     @Transactional
-    public void updateBoard(Long boardId, String email, BoardDTO.Request dto) {
+    public void updateBoard(Long boardId, Long userId, BoardDTO.Request dto) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BoardNotFoundException("수정할 게시물이 존재하지 않습니다."));
 
-        if (!board.getUser().getEmail().equals(email)) {
+        if (!board.getUser().getId().equals(userId)) {
             throw new AccessDeniedException("수정 권한이 없습니다.");
         }
         board.updateBoard(dto.getTitle(), dto.getContent());
     }
 
     @Transactional
-    public void deleteBoard(Long boardId) {
+    public void deleteBoard(Long boardId, Long userId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BoardNotFoundException("삭제할 게시물이 존재하지 않습니다."));
 
+        if (!board.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("삭제 권한이 없습니다.");
+        }
         boardRepository.delete(board);
     }
 

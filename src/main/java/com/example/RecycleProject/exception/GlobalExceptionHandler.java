@@ -16,6 +16,13 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     // 우리가 만든 BusinessException과 그 자식들(RegionNotFound 등)을 처리
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e) {
+        log.warn("[Access Denied] : {}", e.getMessage());
+        ErrorResponse response = new ErrorResponse("ACCESS_DENIED", e.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
         // e.getMessage()를 사용해 동적인 로그 출력
