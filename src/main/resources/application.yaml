@@ -20,6 +20,7 @@ spring:
       data-locations: classpath:seed_data.sql
 
   jpa:
+    show-sql: true
     hibernate:
       ddl-auto: update   # 처음 테스트용: update / 운영: validate
     defer-datasource-initialization: true  # JPA 테이블 생성 후 SQL 실행
@@ -30,8 +31,8 @@ spring:
 
 logging:
   level:
-    root: info                           # 전체적인 기본 로그 레벨
-    com.example.RecycleProject: debug    # 내가 작성한 코드의 상세 로그 (개발용)
-    org.hibernate.SQL: debug             # 실행되는 SQL 쿼리 출력
-    org.hibernate.type.descriptor.sql: trace # SQL에 바인딩된 파라미터 값 확인
+    root: info
+    com.example.RecycleProject: debug
+    org.hibernate.SQL: debug                # 실행 SQL 출력
+    org.hibernate.orm.jdbc.bind: trace      # 바인딩 파라미터 출력 (Hibernate 6)
 

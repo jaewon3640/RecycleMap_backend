@@ -30,7 +30,8 @@ public class LogAspect {
 
     // 범위를 표현하기 위한 바구니
     @Pointcut("execution(* com.example.RecycleProject.controller..*.*(..)) || " +
-            "execution(* com.example.RecycleProject.service..*.*(..))")
+            "execution(* com.example.RecycleProject.service..*.*(..)) || " +
+            "execution(* com.example.RecycleProject.Repository.*.*(..))")
     public void cut() {
     }
 
@@ -70,7 +71,7 @@ public class LogAspect {
     public Object execute(ProceedingJoinPoint joinPoint) throws Throwable {
         TraceStatus status = null;
         try {
-            // 직접 UUID를 만들지 않고, logTrace에게 맡깁니다.
+            // 직접 UUID를 만들지 않고, logTrace에게 맡긴다.
             // logTrace가 ThreadLocal을 보고 ID를 유지할지, 레벨을 높일지 결정합니다.
             status = logTrace.begin(joinPoint.getSignature().toShortString());
 
