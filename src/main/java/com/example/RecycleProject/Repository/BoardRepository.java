@@ -12,19 +12,20 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    @Query(value = "SELECT b FROM Board b JOIN FETCH b.user WHERE b.user = :user ORDER BY b.createdAt DESC",
+    // [N+1 Before] JOIN FETCH 제거 — 게시글 N개 조회 시 User SELECT가 N번 추가 발생
+    @Query(value = "SELECT b FROM Board b WHERE b.user = :user ORDER BY b.createdAt DESC",
            countQuery = "SELECT COUNT(b) FROM Board b WHERE b.user = :user")
     Page<Board> findByUserOrderByCreatedAtDesc(@Param("user") User user, Pageable pageable);
 
-    @Query(value = "SELECT b FROM Board b JOIN FETCH b.user ORDER BY b.createdAt DESC",
+    @Query(value = "SELECT b FROM Board b ORDER BY b.createdAt DESC",
            countQuery = "SELECT COUNT(b) FROM Board b")
     Page<Board> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    @Query(value = "SELECT b FROM Board b JOIN FETCH b.user WHERE b.title LIKE %:title% ORDER BY b.createdAt DESC",
+    @Query(value = "SELECT b FROM Board b WHERE b.title LIKE %:title% ORDER BY b.createdAt DESC",
            countQuery = "SELECT COUNT(b) FROM Board b WHERE b.title LIKE %:title%")
     Page<Board> findByTitleContainingOrderByCreatedAtDesc(@Param("title") String title, Pageable pageable);
 
-    @Query(value = "SELECT b FROM Board b JOIN FETCH b.user WHERE b.user = :user AND b.title LIKE %:title% ORDER BY b.createdAt DESC",
+    @Query(value = "SELECT b FROM Board b WHERE b.user = :user AND b.title LIKE %:title% ORDER BY b.createdAt DESC",
            countQuery = "SELECT COUNT(b) FROM Board b WHERE b.user = :user AND b.title LIKE %:title%")
     Page<Board> findByUserAndTitleContainingOrderByCreatedAtDesc(@Param("user") User user, @Param("title") String title, Pageable pageable);
 }

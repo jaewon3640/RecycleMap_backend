@@ -38,14 +38,20 @@ public class BoardController {
         return ResponseEntity.ok(oneBoard);
     }
 
-    @GetMapping("/search-name")
-    public ResponseEntity<Page<BoardDTO.Response>> search(
-            @RequestParam(required = false) String title,
+    @GetMapping
+    public ResponseEntity<Page<BoardDTO.Response>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(boardService.findAll(PageRequest.of(page, size)));
+    }
 
-        Page<BoardDTO.Response> result = boardService.findAllorSearch(title, PageRequest.of(page, size));
-        return ResponseEntity.ok(result);
+    @GetMapping("/search")
+    public ResponseEntity<Page<BoardDTO.Response>> search(
+            @RequestParam String title,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        // 참고 page.of는 pageable 객체를 만든다.
+        return ResponseEntity.ok(boardService.search(title, PageRequest.of(page, size)));
     }
 
     @DeleteMapping("/{id}")

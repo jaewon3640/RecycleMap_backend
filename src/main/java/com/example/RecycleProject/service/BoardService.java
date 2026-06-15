@@ -70,11 +70,12 @@ public class BoardService {
                 .map(BoardDTO.Response::new);
     }
 
-    public Page<BoardDTO.Response> findAllorSearch(String title, Pageable pageable) {
-        if (title == null || title.trim().isEmpty()) {
-            return boardRepository.findAllByOrderByCreatedAtDesc(pageable)
-                    .map(BoardDTO.Response::new);
-        }
+    public Page<BoardDTO.Response> findAll(Pageable pageable) {
+        return boardRepository.findAllByOrderByCreatedAtDesc(pageable)
+                .map(BoardDTO.Response::new);
+    }
+
+    public Page<BoardDTO.Response> search(String title, Pageable pageable) {
         return boardRepository.findByTitleContainingOrderByCreatedAtDesc(title, pageable)
                 .map(BoardDTO.Response::new);
     }
