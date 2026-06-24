@@ -1,17 +1,23 @@
 spring:
   sql:
     init:
-      mode: never   # 재시작 시 seed_data.sql 재실행 방지
+      mode: always        # [N+1 측정용] seed 자동 로드. ⚠️ 측정 끝나면 반드시 never 로 복구
+      encoding: UTF-8      # classpath seed 를 UTF-8 로 읽음 (한글 깨짐/Data too long 방지)
+      data-locations: classpath:seed_data.sql
   jpa:
     hibernate:
       ddl-auto: update   # 최초 배포 후 validate로 변경 권장
     properties:
       hibernate:
-        format_sql: false
+        format_sql: true   # [N+1 측정용] 측정 끝나면 false 로 복구
+        # [N+1 After] 측정의 After 단계에서 아래 주석 해제 후 재배포
+        # default_batch_fetch_size: 100
 
+# ⚠️ [N+1 측정용 임시 설정] 클라우드 로그에 Hibernate SQL을 찍기 위해 일시적으로 debug.
+#    측정/스샷 끝나면 root: warn / org.hibernate.SQL: warn 으로 반드시 복구할 것.
 logging:
   level:
-    root: warn
+    root: info
     com.example.RecycleProject: info
-    org.hibernate.SQL: warn
-    org.hibernate.type.descriptor.sql: warn
+    org.hibernate.SQL: debug                # 실행 SQL 출력
+    org.hibernate.orm.jdbc.bind: trace      # 바인딩 파라미터 출력

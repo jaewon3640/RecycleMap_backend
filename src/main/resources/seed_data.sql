@@ -325,6 +325,38 @@ INSERT INTO `user` (email, password_hash, name, role, created_at, updated_at, re
      '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa',
      '최분리', 'USER', NOW(), NOW(), 4);   -- 영통구
 
+-- ------------------------------------------------------------
+-- [N+1 시연용] 추가 사용자 25명 (user_id 6 ~ 30)
+--   비밀번호 모두 "1234" (BCrypt). region_id 1~4 순환.
+--   게시글마다 작성자가 달라야 N+1(User SELECT N번)이 또렷하게 보임.
+-- ------------------------------------------------------------
+INSERT INTO `user` (email, password_hash, name, role, created_at, updated_at, region_id) VALUES
+    ('t06@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민06', 'USER', NOW(), NOW(), 1),
+    ('t07@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민07', 'USER', NOW(), NOW(), 2),
+    ('t08@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민08', 'USER', NOW(), NOW(), 3),
+    ('t09@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민09', 'USER', NOW(), NOW(), 4),
+    ('t10@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민10', 'USER', NOW(), NOW(), 1),
+    ('t11@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민11', 'USER', NOW(), NOW(), 2),
+    ('t12@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민12', 'USER', NOW(), NOW(), 3),
+    ('t13@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민13', 'USER', NOW(), NOW(), 4),
+    ('t14@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민14', 'USER', NOW(), NOW(), 1),
+    ('t15@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민15', 'USER', NOW(), NOW(), 2),
+    ('t16@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민16', 'USER', NOW(), NOW(), 3),
+    ('t17@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민17', 'USER', NOW(), NOW(), 4),
+    ('t18@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민18', 'USER', NOW(), NOW(), 1),
+    ('t19@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민19', 'USER', NOW(), NOW(), 2),
+    ('t20@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민20', 'USER', NOW(), NOW(), 3),
+    ('t21@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민21', 'USER', NOW(), NOW(), 4),
+    ('t22@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민22', 'USER', NOW(), NOW(), 1),
+    ('t23@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민23', 'USER', NOW(), NOW(), 2),
+    ('t24@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민24', 'USER', NOW(), NOW(), 3),
+    ('t25@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민25', 'USER', NOW(), NOW(), 4),
+    ('t26@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민26', 'USER', NOW(), NOW(), 1),
+    ('t27@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민27', 'USER', NOW(), NOW(), 2),
+    ('t28@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민28', 'USER', NOW(), NOW(), 3),
+    ('t29@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민29', 'USER', NOW(), NOW(), 4),
+    ('t30@test.com', '$2a$10$Nk/a2Kfms5XKibDFuqQi3.EkxDhILTibfRH2dqbDa5SY/EpNz2SKa', '시민30', 'USER', NOW(), NOW(), 1);
+
 -- ============================================================
 -- 5. 게시판 글 (board)
 -- ============================================================
@@ -355,6 +387,38 @@ INSERT INTO board (title, content, status, user_id, created_at, update_at) VALUE
      '안에 가스가 조금 남은 것 같아요. 그냥 캔으로 배출하면 안 된다고 들었는데 '
      '정확한 처리 방법을 알려주세요.',
      'WAITING', 2, NOW(), NOW());
+
+-- ------------------------------------------------------------
+-- [N+1 시연용] 추가 게시글 25개 (작성자 user_id 6 ~ 30, 전부 다른 유저)
+--   created_at 을 분 단위로 어긋나게 → ORDER BY created_at DESC 명확
+--   GET /api/board?size=30 호출 시 30개 반환 → Before: User SELECT 약 29번
+-- ------------------------------------------------------------
+INSERT INTO board (title, content, status, user_id, created_at, update_at) VALUES
+    ('우유팩은 일반 종이류랑 같이 버려도 되나요?',          '내부 코팅 때문에 따로 모은다고 들었습니다. 헹궈서 말린 뒤 어디에 배출하나요?', 'WAITING', 6,  DATE_ADD(NOW(), INTERVAL -6 MINUTE),  NOW()),
+    ('깨진 유리컵은 유리류로 배출하면 되나요?',             '깨진 유리는 위험해서 따로 처리한다고 하던데 신문지에 싸서 일반쓰레기인가요?',     'WAITING', 7,  DATE_ADD(NOW(), INTERVAL -7 MINUTE),  NOW()),
+    ('치킨 먹고 난 기름 묻은 종이상자 처리법',              '기름과 양념이 밴 종이박스도 종이류로 배출 가능한가요?',                         'WAITING', 8,  DATE_ADD(NOW(), INTERVAL -8 MINUTE),  NOW()),
+    ('아이스팩 안의 내용물은 어떻게 버리나요?',             '젤 형태 아이스팩을 통째로 버려도 되는지, 내용물을 따로 빼야 하는지 궁금합니다.', 'WAITING', 9,  DATE_ADD(NOW(), INTERVAL -9 MINUTE),  NOW()),
+    ('형광등과 LED 전구 배출 차이가 있나요?',              '형광등은 전용 수거함에 넣으라고 하는데 LED도 동일한가요?',                      'WAITING', 10, DATE_ADD(NOW(), INTERVAL -10 MINUTE), NOW()),
+    ('폐건전지는 어디에 버려야 하나요?',                    '다 쓴 건전지를 모아뒀는데 동 행정복지센터에 전용함이 있나요?',                  'WAITING', 11, DATE_ADD(NOW(), INTERVAL -11 MINUTE), NOW()),
+    ('택배 비닐 완충재(뽁뽁이) 분리배출',                  '에어캡 완충재는 비닐류로 배출하면 되나요?',                                     'WAITING', 12, DATE_ADD(NOW(), INTERVAL -12 MINUTE), NOW()),
+    ('스프레이 캔에 내용물이 남았어요',                     '살충제 스프레이가 절반 남았는데 구멍을 뚫고 버려야 하나요?',                     'WAITING', 13, DATE_ADD(NOW(), INTERVAL -13 MINUTE), NOW()),
+    ('칫솔은 어떤 분류로 배출하나요?',                      '플라스틱 손잡이에 솔이 붙어 있는데 그냥 일반쓰레기인가요?',                      'WAITING', 14, DATE_ADD(NOW(), INTERVAL -14 MINUTE), NOW()),
+    ('유리병 뚜껑(금속)은 따로 떼야 하나요?',              '잼병 금속 뚜껑은 캔류로, 병은 유리류로 분리해야 하나요?',                       'WAITING', 15, DATE_ADD(NOW(), INTERVAL -15 MINUTE), NOW()),
+    ('라면 봉지 같은 비닐도 재활용 되나요?',               '과자/라면 봉지처럼 코팅된 비닐도 비닐류로 모으면 되는지 궁금합니다.',           'WAITING', 16, DATE_ADD(NOW(), INTERVAL -16 MINUTE), NOW()),
+    ('영수증은 종이류인가요?',                              '감열지 영수증은 재활용이 안 된다고 들었는데 맞나요?',                           'WAITING', 17, DATE_ADD(NOW(), INTERVAL -17 MINUTE), NOW()),
+    ('깨끗한 일회용 플라스틱 컵 배출',                      '카페 테이크아웃 컵을 헹궈서 플라스틱류로 배출해도 되나요?',                      'WAITING', 18, DATE_ADD(NOW(), INTERVAL -18 MINUTE), NOW()),
+    ('헌 옷은 의류수거함만 이용하나요?',                    '못 입는 옷도 의류수거함에 넣어도 되는지, 종량제로 버려야 하는지 궁금합니다.',    'WAITING', 19, DATE_ADD(NOW(), INTERVAL -19 MINUTE), NOW()),
+    ('우산 망가진 건 어떻게 버리나요?',                     '천과 금속살이 섞여 있는데 분해해서 버려야 하나요?',                              'WAITING', 20, DATE_ADD(NOW(), INTERVAL -20 MINUTE), NOW()),
+    ('종이컵 안쪽 코팅도 재활용 가능한가요?',              '종이컵은 코팅이 있어 일반 종이랑 다르게 배출한다고 들었습니다.',                'WAITING', 21, DATE_ADD(NOW(), INTERVAL -21 MINUTE), NOW()),
+    ('페트병 뚜껑과 링은 어떻게 하나요?',                   '뚜껑은 떼서 따로, 링은 그냥 두라고 하던데 정확한 방법이 궁금합니다.',           'WAITING', 22, DATE_ADD(NOW(), INTERVAL -22 MINUTE), NOW()),
+    ('알약/약품 폐기는 어디서 하나요?',                     '유통기한 지난 약은 약국에 가져가야 한다고 들었는데 맞나요?',                     'WAITING', 23, DATE_ADD(NOW(), INTERVAL -23 MINUTE), NOW()),
+    ('도자기 그릇 깨진 것 배출',                            '사기 그릇이 깨졌는데 유리류가 아니라 일반쓰레기인가요?',                         'WAITING', 24, DATE_ADD(NOW(), INTERVAL -24 MINUTE), NOW()),
+    ('busy한 분리수거장, 명절엔 어떻게 되나요?',           '명절 연휴에도 재활용 수거를 하는지 일정이 궁금합니다.',                          'WAITING', 25, DATE_ADD(NOW(), INTERVAL -25 MINUTE), NOW()),
+    ('대형 폐가전(냉장고) 무상 수거 신청',                 '냉장고를 버리려는데 무상 방문수거가 되는지, 신청은 어디서 하나요?',             'WAITING', 26, DATE_ADD(NOW(), INTERVAL -26 MINUTE), NOW()),
+    ('나무 젓가락/이쑤시개는 어떤 분류?',                  '나무로 된 일회용품은 일반쓰레기인지 음식물인지 헷갈립니다.',                     'WAITING', 27, DATE_ADD(NOW(), INTERVAL -27 MINUTE), NOW()),
+    ('계란 껍데기는 음식물인가요?',                         '계란 껍데기, 조개 껍데기는 음식물 쓰레기가 아니라고 들었습니다.',               'WAITING', 28, DATE_ADD(NOW(), INTERVAL -28 MINUTE), NOW()),
+    ('스티로폼에 송장 스티커 붙어 있어요',                  '택배 스티로폼에 운송장이 붙어 있는데 떼고 배출해야 하나요?',                     'WAITING', 29, DATE_ADD(NOW(), INTERVAL -29 MINUTE), NOW()),
+    ('플라스틱 장난감은 재활용 되나요?',                    '여러 재질이 섞인 장난감인데 플라스틱류로 배출 가능한가요?',                      'WAITING', 30, DATE_ADD(NOW(), INTERVAL -30 MINUTE), NOW());
 
 -- ============================================================
 -- 6. 게시판 댓글 (board_reply)

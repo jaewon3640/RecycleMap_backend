@@ -27,6 +27,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        # [N+1 After] 아래 한 줄 주석 해제 후 앱 재시작 → User 조회가 IN절 1쿼리로 합쳐짐
+        #   Before(주석 상태): board 1쿼리 + user N쿼리   (N+1)
+        #   After (해제 상태): board 1쿼리 + user IN쿼리 1개  (총 2쿼리)
+        # default_batch_fetch_size: 100
     open-in-view: false
 
 logging:
