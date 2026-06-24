@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/board")
@@ -52,6 +54,14 @@ public class BoardController {
             @RequestParam(defaultValue = "10") int size) {
         // 참고 page.of는 pageable 객체를 만든다.
         return ResponseEntity.ok(boardService.search(title, PageRequest.of(page, size)));
+    }
+
+    // [커서 페이징] lastId 미지정 시 최신부터, 이후엔 직전 응답의 마지막 id를 lastId로 전달
+    @GetMapping("/cursor")
+    public ResponseEntity<List<BoardDTO.Response>> getCursor(
+            @RequestParam(required = false) Long lastId,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(boardService.findWithCursor(lastId, size));
     }
 
     @DeleteMapping("/{id}")

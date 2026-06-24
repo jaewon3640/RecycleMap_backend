@@ -4,6 +4,7 @@ import com.example.RecycleProject.domain.Board;
 import com.example.RecycleProject.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,4 +30,10 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query(value = "SELECT b FROM Board b JOIN FETCH b.user WHERE b.user = :user AND b.title LIKE %:title% ORDER BY b.createdAt DESC",
            countQuery = "SELECT COUNT(b) FROM Board b WHERE b.user = :user AND b.title LIKE %:title%")
     Page<Board> findByUserAndTitleContainingOrderByCreatedAtDesc(@Param("user") User user, @Param("title") String title, Pageable pageable);
+
+    // [커서 페이징] board_id < lastId 로 PK 인덱스를 직접 seek → 위치와 무관하게 LIMIT 행만 읽음
+    //   (OFFSET 페이징의 deep paging 문제 해결: OFFSET은 건너뛴 행도 모두 읽지만 커서는 안 읽음)
+    //   JOIN FETCH b.user 로 목록과 동일하게 N+1 방지. Pageable 은 size(LIMIT) 지정용.
+    @Query("SELECT b FROM Board b JOIN FETCH b.user WHERE b.id < :lastId ORDER BY b.id DESC")
+    List<Board> findByIdLessThanOrderByIdDesc(@Param("lastId") Long lastId, Pageable pageable);
 }

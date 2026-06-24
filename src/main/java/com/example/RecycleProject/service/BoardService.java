@@ -12,8 +12,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -78,5 +81,15 @@ public class BoardService {
     public Page<BoardDTO.Response> search(String title, Pageable pageable) {
         return boardRepository.findByTitleContainingOrderByCreatedAtDesc(title, pageable)
                 .map(BoardDTO.Response::new);
+    }
+
+    // [커서 페이징] lastId 다음(작은 id)부터 size개. lastId 없으면 최신부터(MAX_VALUE).
+    //   응답이 size보다 적게 오면 마지막 페이지. 클라이언트는 마지막 항목 id를 다음 lastId로 사용.
+    public List<BoardDTO.Response> findWithCursor(Long lastId, int size) {
+        Long cursor = (lastId == null) ? Long.MAX_VALUE : lastId;
+        return boardRepository.findByIdLessThanOrderByIdDesc(cursor, PageRequest.of(0, size))
+                .stream()
+                .map(BoardDTO.Response::new)
+                .toList();
     }
 }
