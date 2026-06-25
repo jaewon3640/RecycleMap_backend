@@ -5,6 +5,7 @@ import com.example.RecycleProject.DTO.DisposalScheduleResponse;
 import com.example.RecycleProject.ENUM.Category;
 import com.example.RecycleProject.Repository.DisposalScheduleRepository;
 import com.example.RecycleProject.Repository.RegionRepository;
+import com.example.RecycleProject.config.RedisConfig;
 import com.example.RecycleProject.domain.DisposalSchedule;
 import com.example.RecycleProject.domain.Region;
 import com.example.RecycleProject.exception.RegionNotFoundException;
@@ -69,7 +70,7 @@ public class DisposalScheduleService {
         이떄 지역으만 조회를 할수 있으니 파라미터는 DTO가 아닌 단순하게 하는것을 권장한다.
         DTO로 해도는 되는데 카테고리등의 모든 값을 채워서 보내니 컨트롤러가 복잡해짐
      */
-    @Cacheable(value = "schedule", key = "#regionId")
+    @Cacheable(value = RedisConfig.CACHE_SCHEDULE, key = "#regionId")
     public List<DisposalScheduleResponse> getAllDisposalSchedule(Long regionId) {
         Region region = regionRepository.findById(regionId)
                 .orElseThrow(() -> new RegionNotFoundException("존재하지 않는 지역입니다."));
@@ -94,7 +95,7 @@ public class DisposalScheduleService {
         3. DB에 저장후에 id를 반환한다.
         id반환 이유는? 상세페이지로 이동을 시키거나, 등록되었다는 문자를 날리기 위함
      */
-    @CacheEvict(value = "schedule", key = "#dto.regionId")
+    @CacheEvict(value = RedisConfig.CACHE_SCHEDULE, key = "#dto.regionId")
     @Transactional
     public Long saveSchedule(DisposalScheduleRequest dto) {
         Region region = regionRepository.findById(dto.getRegionId())

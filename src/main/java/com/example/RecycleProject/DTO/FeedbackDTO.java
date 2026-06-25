@@ -26,8 +26,6 @@ public class FeedbackDTO {
         @NotBlank(message = "내용을 입력해주세요")
         @Size(min = 10, max = 1000, message = "내용은 10자이상 1000자 이하로 작성해주세요")
         private String content;
-
-
         @NotNull(message = "배출정보를 입력해주세요.")
         private Long trashDetailId;
 

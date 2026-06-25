@@ -2,6 +2,7 @@ package com.example.RecycleProject.service;
 
 import com.example.RecycleProject.DTO.TrashDetailDTO;
 import com.example.RecycleProject.ENUM.Category;
+import com.example.RecycleProject.config.RedisConfig;
 import com.example.RecycleProject.Repository.RegionRepository;
 import com.example.RecycleProject.Repository.TrashDetailRepository;
 import com.example.RecycleProject.domain.Region;
@@ -38,7 +39,7 @@ public class TrashDetailService {
         물론 Enum으로 받아도 되는데 바로 400 에러가 뜨니 커스텀 예외처리 하ㅣㄱ 위해 변환하자
 
      */
-    @Cacheable(value = "TrashDetail", key = "#dto.regionId + ':' + #dto.category")
+    @Cacheable(value = RedisConfig.CACHE_TRASH_ONE, key = "#dto.regionId + ':' + #dto.category")
     public TrashDetailDTO.Response getDetailByRegionAndCategory(TrashDetailDTO.Request dto) {
         log.info("[TrashDetail 조회] RegionId : {} , Category : {}", dto.getRegionId(), dto.getCategory());
 
@@ -71,7 +72,7 @@ public class TrashDetailService {
     }
 
     //3. 카테고리를 이용한 전체 조회
-    @Cacheable(value = "TrashDetail", key = "'all:' + #regionId + ':' + #category")
+    @Cacheable(value = RedisConfig.CACHE_TRASH_ALL, key = "'all:' + #regionId + ':' + #category")
     public List<TrashDetailDTO.Response> getAllDetailByCategory(Category category, Long regionId) {
         // String을 Enum으로 변환
         Region region = regionRepository.findById(regionId)
