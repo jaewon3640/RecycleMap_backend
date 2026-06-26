@@ -53,6 +53,10 @@ public class SecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
 
+                        // 모니터링: Prometheus 스크레이프용 actuator 엔드포인트 허용
+                        //   (노출된 health/info/prometheus 만 응답, 그 외는 404)
+                        .requestMatchers("/actuator/**").permitAll()
+
                         // 1. OPTIONS (Preflight) 허용
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()

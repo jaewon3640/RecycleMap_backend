@@ -71,6 +71,47 @@ services:
     ports:
       - "80:80"
 
+  # ──────────────────────────────────
+  # Prometheus (메트릭 수집)
+  # ──────────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: recycle-prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=3d'   # 3일치만 보관 (디스크/메모리 절약)
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    mem_limit: 256m            # 2GB 인스턴스 보호용 메모리 상한
+    depends_on:
+      - app
+
+  # ──────────────────────────────────
+  # Grafana (대시보드 시각화)
+  # ──────────────────────────────────
+  grafana:
+    image: grafana/grafana:latest
+    container_name: recycle-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    mem_limit: 256m
+    depends_on:
+      - prometheus
+
 volumes:
   mysql-data:
   redis-data:
+  prometheus-data:
+  grafana-data:

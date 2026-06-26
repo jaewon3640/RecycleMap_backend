@@ -40,3 +40,19 @@ logging:
     org.hibernate.SQL: debug                # 실행 SQL 출력
     org.hibernate.orm.jdbc.bind: trace      # 바인딩 파라미터 출력 (Hibernate 6)
 
+# ───────────────── 모니터링 (Prometheus + Grafana) ─────────────────
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus   # Prometheus가 긁어갈 /actuator/prometheus 노출
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    tags:
+      application: recycle-app              # 모든 메트릭에 공통 태그(여러 앱 구분용)
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true          # HTTP 응답시간 p95/p99 히스토그램 버킷 생성
+
