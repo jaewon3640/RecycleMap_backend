@@ -72,6 +72,9 @@ public class RedisConfig {
                 // 위 목록에 없는 캐시는 기본 30분 ± 0~5분
                 .cacheDefaults(base.entryTtl(randomizedTtl(Duration.ofMinutes(30), Duration.ofMinutes(5))))
                 .withInitialCacheConfigurations(caches)
+                // [모니터링] 캐시별 hit/miss 통계 수집 활성화(기본 OFF).
+                //   Micrometer가 cache_gets_total{result=hit|miss} 메트릭으로 노출 → Grafana 캐시 히트율 패널.
+                .enableStatistics()
                 .build();
     }
 
