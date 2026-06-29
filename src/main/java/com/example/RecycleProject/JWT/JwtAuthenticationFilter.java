@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import com.example.RecycleProject.constants.RedisKeys;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,7 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 블랙리스트 확인 - 로그아웃된 토큰이면 인증 처리 skip
         boolean isBlacklisted = token != null &&
-                redisTemplate.hasKey("blacklist:" + token);
+                redisTemplate.hasKey(RedisKeys.blacklist(token));
 
         if (token != null && !isBlacklisted && jwtTokenProvider.isValid(token)) {
             // 1. 토큰에서 Long 타입의 ID를 추출 (기존 getUserId 메서드 활용)

@@ -78,6 +78,13 @@ public class SecurityConfig {
 
                         .anyRequest().authenticated()
                 )
+                // 미인증/만료 토큰으로 보호 자원 접근 시 기본 403 대신 401 을 반환한다.
+                //   프론트(api.ts) 인터셉터가 401 을 감지해 refresh 재발급을 트리거하기 위함.
+                .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter().write("{\"error\":\"UNAUTHORIZED\",\"message\":\"인증이 필요하거나 토큰이 만료되었습니다.\"}");
+                }))
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate),
                         UsernamePasswordAuthenticationFilter.class)
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()));

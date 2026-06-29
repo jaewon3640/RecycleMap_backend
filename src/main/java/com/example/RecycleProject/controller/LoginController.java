@@ -3,12 +3,15 @@ package com.example.RecycleProject.controller;
 import com.example.RecycleProject.DTO.JoinRequest;
 import com.example.RecycleProject.DTO.JwtDTO;
 import com.example.RecycleProject.DTO.LoginRequest;
+import com.example.RecycleProject.DTO.RefreshRequest;
 import com.example.RecycleProject.JWT.JwtTokenProvider;
+import com.example.RecycleProject.constants.RedisKeys;
 import com.example.RecycleProject.domain.User;
 import com.example.RecycleProject.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -53,7 +56,7 @@ public class LoginController {
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId(),user.getRole());
 
         redisTemplate.opsForValue().set(
-                "refresh:" + user.getId(),
+                RedisKeys.refresh(user.getId()),
                 refreshToken,
                 Duration.ofDays(14)
         );
@@ -82,7 +85,7 @@ public class LoginController {
                 long remainingSeconds = jwtTokenProvider.getRemainingSeconds(accessToken);
                 if (remainingSeconds > 0) {
                     redisTemplate.opsForValue().set(
-                            "blacklist:" + accessToken,
+                            RedisKeys.blacklist(accessToken),
                             "logout",
                             Duration.ofSeconds(remainingSeconds)
                     );
@@ -102,10 +105,64 @@ public class LoginController {
             }
         }
         if (resolvedUserId != null) {
-            redisTemplate.delete("refresh:" + resolvedUserId);
+            redisTemplate.delete(RedisKeys.refresh(resolvedUserId));
         }
 
         return ResponseEntity.ok("로그아웃 성공");
+    }
+
+    /*
+        Access Token 만료 시 재로그인 없이 새 Access Token 을 발급한다.
+        1. refresh 서명/만료 검증 (실패 → 401 재로그인 유도)
+        2. SETNX 락으로 동일 유저 동시 refresh 중복 처리 차단
+        3. 서버 보관본(refresh:{userId})과 대조 (로그아웃/탈취 교체 차단)
+        4. 새 Access Token 발급 (refresh 는 회전하지 않고 기존 것 유지)
+     */
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@RequestBody @Valid RefreshRequest request) {
+        String refreshToken = request.getRefreshToken();
+
+        // 1. 서명/만료 검증 — 만료되었거나 위조면 재발급 불가
+        if (!jwtTokenProvider.isValid(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("유효하지 않은 refresh 토큰입니다. 다시 로그인해주세요.");
+        }
+
+        Long userId = jwtTokenProvider.getUserId(refreshToken);
+
+        // 2. SETNX 락 — 프론트 큐(isRefreshing)가 1차 직렬화, 서버에서 2차 방어.
+        //    TTL 10초로 데드락 방지(작업은 finally 에서 즉시 해제).
+        String lockKey = RedisKeys.refreshLock(userId);
+        Boolean acquired = redisTemplate.opsForValue()
+                .setIfAbsent(lockKey, "1", Duration.ofSeconds(10));
+        if (Boolean.FALSE.equals(acquired)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("토큰 재발급이 이미 진행 중입니다. 잠시 후 다시 시도해주세요.");
+        }
+
+        try {
+            // 3. 서버 보관본과 대조 — 로그아웃(삭제)되었거나 교체된 토큰이면 거부
+            Object stored = redisTemplate.opsForValue().get(RedisKeys.refresh(userId));
+            if (stored == null || !stored.equals(refreshToken)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("만료되었거나 무효화된 세션입니다. 다시 로그인해주세요.");
+            }
+
+            // 4. 새 Access Token 발급 (refresh 는 그대로 유지)
+            User user = userService.findOne(userId);
+            String newAccessToken = jwtTokenProvider.createAccessToken(user.getId(), user.getRole());
+
+            TokenResponse response = TokenResponse.builder()
+                    .accessToken(newAccessToken)
+                    .refreshToken(refreshToken)
+                    .nickname(user.getName())
+                    .role(user.getRole().name())
+                    .build();
+            return ResponseEntity.ok(response);
+        } finally {
+            // 5. 락 해제 — 작업 완료 즉시 풀어 다음 갱신 허용
+            redisTemplate.delete(lockKey);
+        }
     }
 
     @GetMapping("/me")

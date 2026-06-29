@@ -77,7 +77,7 @@ public class JwtTokenProvider {
         } catch (io.jsonwebtoken.ExpiredJwtException e) {
             // 만료된 토큰 -> 이때 '재발급'이 필요하다는 신호를 줘야 함
         } catch (io.jsonwebtoken.UnsupportedJwtException e) {
-            // 지원되지 않는 토큰
+            // 지원되지 않는 토큰++
         } catch (IllegalArgumentException e) {
             // 토큰이 비어있거나 잘못됨
         }
