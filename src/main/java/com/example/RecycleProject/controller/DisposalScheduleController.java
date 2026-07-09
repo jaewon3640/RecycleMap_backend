@@ -53,7 +53,8 @@ public class DisposalScheduleController {
     (@PathVariable("regionId") Long regionId){
 
         log.info("지역별 전체 일정 조회 요청 -Region : {}", regionId);
-        List<DisposalScheduleResponse> allDisposalSchedule = disposalScheduleService.getAllDisposalSchedule(regionId);
+        // 서비스는 캐시 안정성을 위해 CacheList 로 감싸 반환 → items 만 꺼내 응답(API 형태 불변)
+        List<DisposalScheduleResponse> allDisposalSchedule = disposalScheduleService.getAllDisposalSchedule(regionId).getItems();
 
         log.info("지약뱔 전체 일정 조회 완료 건수 : {}", allDisposalSchedule.size());
         return ResponseEntity.ok(allDisposalSchedule);

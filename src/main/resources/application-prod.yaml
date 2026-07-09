@@ -5,6 +5,7 @@ spring:
       encoding: UTF-8      # classpath seed 를 UTF-8 로 읽음 (한글 깨짐/Data too long 방지)
       data-locations: classpath:seed_data.sql
   jpa:
+    show-sql: false        # 운영에선 SQL 로그 끔(측정 시에만 true) — 디스크 로그 폭증 방지
     hibernate:
       ddl-auto: update   # 최초 배포 후 validate로 변경 권장
     properties:

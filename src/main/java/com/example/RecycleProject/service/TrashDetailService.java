@@ -1,5 +1,6 @@
 package com.example.RecycleProject.service;
 
+import com.example.RecycleProject.DTO.CacheList;
 import com.example.RecycleProject.DTO.TrashDetailDTO;
 import com.example.RecycleProject.ENUM.Category;
 import com.example.RecycleProject.config.RedisConfig;
@@ -72,8 +73,10 @@ public class TrashDetailService {
     }
 
     //3. 카테고리를 이용한 전체 조회
+    //   반환을 CacheList 로 감싼다: GenericJackson2JsonRedisSerializer 가 root-level List 를
+    //   round-trip 하지 못해(캐시 hit 시 500) 객체 필드로 한 번 감싸 직렬화 안정성을 확보한다.
     @Cacheable(value = RedisConfig.CACHE_TRASH_ALL, key = "'all:' + #regionId + ':' + #category")
-    public List<TrashDetailDTO.Response> getAllDetailByCategory(Category category, Long regionId) {
+    public CacheList<TrashDetailDTO.Response> getAllDetailByCategory(Category category, Long regionId) {
         // String을 Enum으로 변환
         Region region = regionRepository.findById(regionId)
                 .orElseThrow(() -> new RegionNotFoundException("해당 지역을 찾을수 없습니다."));
@@ -83,6 +86,6 @@ public class TrashDetailService {
                 .map(trashDetail -> new TrashDetailDTO.Response(trashDetail))
                 .toList();
 
-        return list;
+        return new CacheList<>(list);
     }
 }

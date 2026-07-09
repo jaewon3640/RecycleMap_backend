@@ -83,7 +83,11 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을수 없습니다."));
 
-        Region region = regionService.getOrCreateRegion(dto);
+        // regionId 가 오면 기존 지역을 PK 로 직접 링크 → 중복 region 행 생성 방지.
+        // (과거: city+district 만 보내고 dong=NULL 이라 매번 새 region 이 생성되던 버그)
+        Region region = (dto.getRegionId() != null)
+                ? regionService.getById(dto.getRegionId())
+                : regionService.getOrCreateRegion(dto);
 
         user.updateRegion(region);
 

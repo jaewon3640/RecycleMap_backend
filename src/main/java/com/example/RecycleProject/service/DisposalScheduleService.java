@@ -1,5 +1,6 @@
 package com.example.RecycleProject.service;
 
+import com.example.RecycleProject.DTO.CacheList;
 import com.example.RecycleProject.DTO.DisposalScheduleRequest;
 import com.example.RecycleProject.DTO.DisposalScheduleResponse;
 import com.example.RecycleProject.ENUM.Category;
@@ -70,8 +71,10 @@ public class DisposalScheduleService {
         이떄 지역으만 조회를 할수 있으니 파라미터는 DTO가 아닌 단순하게 하는것을 권장한다.
         DTO로 해도는 되는데 카테고리등의 모든 값을 채워서 보내니 컨트롤러가 복잡해짐
      */
+    //   반환을 CacheList 로 감싼다: GenericJackson2JsonRedisSerializer 가 root-level List 를
+    //   round-trip 하지 못해(캐시 hit 시 500) 객체 필드로 한 번 감싸 직렬화 안정성을 확보한다.
     @Cacheable(value = RedisConfig.CACHE_SCHEDULE, key = "#regionId")
-    public List<DisposalScheduleResponse> getAllDisposalSchedule(Long regionId) {
+    public CacheList<DisposalScheduleResponse> getAllDisposalSchedule(Long regionId) {
         Region region = regionRepository.findById(regionId)
                 .orElseThrow(() -> new RegionNotFoundException("존재하지 않는 지역입니다."));
 
@@ -85,7 +88,7 @@ public class DisposalScheduleService {
             dtoList.add(disposalScheduleResponse);
         }
 
-        return dtoList;
+        return new CacheList<>(dtoList);
     }
 
     /*

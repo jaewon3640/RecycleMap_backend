@@ -53,8 +53,9 @@ public class TrashDetailController {
     public ResponseEntity<List<TrashDetailDTO.Response>> getAllByCategory(
             @RequestParam Long regionId,
             @RequestParam Category category) {
+        // 서비스는 캐시 안정성을 위해 CacheList 로 감싸 반환 → 여기서 items 만 꺼내 응답(API 형태 불변)
         List<TrashDetailDTO.Response> result =
-                trashDetailService.getAllDetailByCategory(category, regionId);
+                trashDetailService.getAllDetailByCategory(category, regionId).getItems();
 
         return ResponseEntity.ok(result);
     }

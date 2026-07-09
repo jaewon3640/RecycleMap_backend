@@ -62,6 +62,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/trash-detail/**").permitAll()
                         .requestMatchers("/api/schedules/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/regions").permitAll()
 
                         // 2. 게시판 조회는 인증 불필요, 작성/수정/삭제는 인증 필요
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/board", "/api/board/**").permitAll()
