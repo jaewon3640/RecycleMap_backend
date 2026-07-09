@@ -73,6 +73,8 @@ EC2 SSH 접속
   ⑤ docker pull latest
   ⑥ docker-compose.prod.yml up --no-deps app
 ```
+(리팩토링 전)
+<img width="3200" height="1402" alt="Recycle_ERD" src="https://github.com/user-attachments/assets/40521632-a8ec-434e-8c09-7419231de4ed" />
 
 ---
 
