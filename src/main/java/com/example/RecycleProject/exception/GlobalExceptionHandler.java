@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.stream.Collectors;
 
@@ -28,6 +29,16 @@ public class GlobalExceptionHandler {
         // e.getMessage()를 사용해 동적인 로그 출력
         log.warn("[Business Exception] : {}", e.getMessage());
         ErrorResponse response = new ErrorResponse("BUSINESS_ERROR", e.getMessage());
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    // 파라미터 타입 변환 실패(예: category=VINYL 처럼 존재하지 않는 enum 값) → 500이 아닌 400으로 응답
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        log.warn("[Type Mismatch] 파라미터: {}, 잘못된 값: {}", e.getName(), e.getValue());
+        ErrorResponse response = new ErrorResponse(
+                "INVALID_PARAMETER",
+                String.format("'%s' 파라미터의 값 '%s' 은(는) 유효하지 않습니다.", e.getName(), e.getValue()));
         return ResponseEntity.badRequest().body(response);
     }
 
