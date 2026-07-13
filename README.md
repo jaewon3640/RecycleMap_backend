@@ -313,19 +313,7 @@ if (resolvedUserId == null && bearerToken != null) {
 커밋: 게시판 기능 병합 에러(프론트와 파라미터 문제 + 백엔드 권한 문제 수정) (469746b)
 ```
 
----
-
-### 6-6. Spring AOP 적용 후 순환 의존성 에러
-
-**현상**: AOP 도입 직후 애플리케이션 기동 불가 (`BeanCurrentlyInCreationException`)
-
-**원인**: `LogAspect`가 `LogTrace`를 주입받고, `LogTrace`가 포인트컷 대상 빈을 참조하는 순환 구조
-
-**해결**: `LogTrace`를 별도 컴포넌트로 분리하고, AOP 범위를 Controller·Service 계층으로 명확히 한정
-
-```
-커밋: AOP 에러수정 (ab5d6ca)
-```
+--
 
 ---
 
