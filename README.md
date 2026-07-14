@@ -291,8 +291,7 @@ if (resolvedUserId == null && bearerToken != null) {
 
 **해결**: 캐시 대상 클래스에 Lombok `@NoArgsConstructor` 추가
 
-```
-커밋: 조회 메서드 Redis 도입 및 Redis 역직렬화로 인한 기본 생성자 설정 (d6c70af)
+
 ```
 
 ---
